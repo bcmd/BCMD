@@ -1,0 +1,57 @@
+# in the absence of explicit other settings (TBD), various details are concocted from the model name
+# including program & workdir
+model: bsrf
+
+# all distribs default to (constant, 0) if not given 
+
+# vars to be simulated, with distrib of initial conditions
+var: HbO2, constant, 0
+
+# optional external file specifying param distributions
+# explicit param lines can override this on an individual basis
+# (which may be necessary if dists in file are not uniform, as optimisation requires)
+param_file: ../examples/bsrf/bsrf-pdists.csv
+
+# job mode specifies the type of optimisation
+# for the moment, we only support global optimisation (GLP), may add others later
+job_mode: GLP
+
+# for the moment we only support pswarm, but will probably add other (possibly faster)
+# methods in future
+solver: pswarm
+
+# distance metric to be minimised
+# one of: euclidean (default), manhattan, cosine, loglik, mean, angular
+distance: euclidean
+
+# limit on number of iterations (default 1000, which is *a lot*)
+max_iter: 10
+
+# param_select specifies which params to vary
+# may specify an explicit (comma-separated) list
+# or * to mean all params for which a distrib has been provided (the default, but usually ill-advised)
+param_select: R_autc, Xtot
+
+# explicit details of params to be optimised, with "prior"
+# only uniform distribs are supported, and are taken as bounds
+# if a default value is provided it will be used as the initial guess
+# otherwise, the midpoint will be used
+param: R_autc, uniform, -1, 2, 1
+param: Xtot, uniform, 8, 14, 12
+
+# inputs -- can have perturbation distribs, but they are ignored
+input: SaO2sup
+input: P_a
+input: Pa_CO2
+
+# alias maps a var or param name to the corresponding header in the data file
+# in this case, we are using a scaled and offset version of the NIRS data
+alias: HbO2, DHbO2x
+
+# use an alias for t to specify the t variable, if not using the default ' t'
+# in particular, you might need to alias t to itself
+# if explicitly including it by that name in a CSV
+alias: t, t
+
+# base sequence -- shared param initialisation, etc -- can include multiple files here, which will be run in order
+#init: scratch/funcact_pvals.dat

@@ -1,0 +1,16 @@
+# documentation for shared BS/BSRF (but not M_star) metabolic submodel symbols
+
+## Reaction rate for the reduction of Cu$_A$.
+## ~ mM s$^{-1}$
+## $f_1$
+## @ f1
+
+## Reaction rate for the reduction of a$_3$.
+## ~ mM s$^{-1}$
+## $f_3$
+## @ f2
+
+## Reaction rate for the reduction of O$_2$.
+## ~ mM s$^{-1}$
+## $f_3$
+## @ f3

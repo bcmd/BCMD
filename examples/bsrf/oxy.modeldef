@@ -1,0 +1,52 @@
+# oxygen transport submodel for BSRF
+
+@input SaO2sup
+@output SaO2sup XOv O2c CBF
+@extern J_O2 G
+
+# algebraic relations
+XOv : 0 = CBF*(XOa-XOv)-J_O2
+O2c : 0 = phi*(ScO2/(1-ScO2))^(1/n_h)-O2c
+
+# intermediates
+CBF = G*(P_a-P_v)
+ScO2 = (SaO2sup + SvO2)/2
+SvO2 = XOv/Xtot
+XOa = Xtot*SaO2sup
+
+# initial/default values
+XOv := XOv_n
+XOa := XOa_n
+O2c := O2c_n
+CBF := CBFn
+SaO2sup := SaO2_n
+ScO2 := ScO2_n
+SvO2 := SvO2_n
+
+# constraints
+XOv >= 0
+O2c >= 0
+
+# parameters
+CBFn := 0.0125
+n_h := 2.5
+O2c_n := phi*pow(ScO2_n/(1-ScO2_n), 1/n_h)
+phi := 0.036
+SaO2_n := 0.96
+ScO2_n := (SaO2_n + SvO2_n)/2
+SvO2_n := XOv_n/Xtot_n
+XOa_n := Xtot_n*SaO2_n
+XOv_n := (CBFn*XOa_n-J_O2n)/CBFn
+Xtot := 9.1
+Xtot_n := 9.1
+
+
+## + Oxygen
+## @ XOv O2c XOa CBF phi ScO2 n_h SvO2 Xtot SaO2sup P_v XOa_n XOv_n SvO2_n ScO2_n O2c_n SaO2_n Xtot_n CBFn
+
+# externals:
+# bsrf_link: P_a P_v CBFn J_O2 J_O2n
+# bsrf_blood: G
+
+@import doc_oxy
+

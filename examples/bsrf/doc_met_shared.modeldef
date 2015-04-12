@@ -1,0 +1,48 @@
+# documentation for shared BS/BSRF metabolic submodel symbols
+
+## Rate of proton return to the mitochondrial matrix.
+## ~ mM s$^{-1}$
+## @ L
+
+## Capacitance of the mitochondrial inner membrane.
+## ~ mM mV$^{-1}$
+## @ C_im
+
+## Relative mitochondrial volume for protons, taking into account buffering effect of pH.
+## ~ dimensionless
+## @ R_Hi
+
+## Fraction of brain tissue volume that is mitochondria.
+## ~ dimensionless
+## @ Vol_mit
+
+## Proton cost of the reaction reducing Cu$_A$.
+## ~ dimensionless
+## $p_1$
+## @ p1
+
+## Proton cost of the reaction reducing a$_3$.
+## ~ dimensionless
+## $p_3$
+## @ p2
+
+## Proton cost of the reaction reducing O$_2$.
+## ~ dimensionless
+## $p_3$
+## @ p3
+
+## Proton motive force across the mitochondrial inner membrane.
+## $\Delta p$
+## ~ mV
+## @ Dp
+
+## Driving force Complex V.
+## $\theta$
+## ~ dimensionless
+## @ theta
+
+## Proportionality constant in calculation of driving forces due to concentration differences.
+## Defined as $RT/F$, where $F$ is Faraday's constant, $R$ the ideal gas constant and $T$
+## the absolute temperature.
+## ~ mV
+## @ Z 

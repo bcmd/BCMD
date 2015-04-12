@@ -1,0 +1,346 @@
+# documentation for metabolic submodel symbols specific to BrainSignals
+
+## Normal oxidised fraction of Cu$_A$.
+## $Cu_{a,frac,n}$
+## ~ dimensionless
+## @ a_frac_n
+
+## Concentration of reduced Cu$_A$.
+## ~ mM
+## $Cu_{A,r}$
+## @ ared
+
+## Normal concentration of reduced Cu$_A$.
+## ~ mM
+## $Cu_{A,r,n}$
+## @ ared_n
+
+## Concentration of oxidised cytochrome a$_3$.
+## ~ mM
+## $a_{3,o}$
+## @ b
+
+## Normal concentration of oxidised cytochrome a$_3$.
+## ~ mM
+## $a_{3,o,n}$
+## @ b_n
+
+## Parameter controlling the sensitivity of the reduction of a$_3$ to $\Delta p$.
+## ~ mV$^{-1}$
+## $c_3$
+## @ c3
+
+## Natural buffering capacity of protons in mitochondria.
+## ~ dimensionless
+## $C_{0,i}$
+## @ C_0i
+
+## Buffering capacity of protons in mitochondria.
+## ~ dimensionless
+## @ C_buffi
+
+## Excess redox potential for NADH at normal demand.
+## ~ mV
+## @ C_NADH
+
+## Normal value of $C_{NADH}$.
+## ~ mV
+## @ C_NADH_n
+
+## Parameter controlling sensitivity of $k_1$ to $\Delta p$.
+## ~ mV$^{-1}$
+## $c_{k_1}$
+## @ ck1
+
+## Parameter controlling sensitivity of $k_2$ to $\Delta p$.
+## ~ mV$^{-1}$
+## $c_{k_2}$
+## @ ck2
+
+## Control parameter representing the action of Complex V inhibitors.
+## ~ dimensionless
+## $CV_{inh}$
+## @ CVinh
+
+## Concentration of cytochrome c oxidase in mitochondria.
+## $CCO_{tot}$
+## ~ mM
+## @ cytox_tot
+
+## Concentration of cytochrome c oxidase in tissue.
+## $CCO_{tis}$
+## ~ mM
+## @ cytox_tot_tis
+
+## Scale parameter for the dependence of NADH redox potential on demand.
+## ~ dimensionless
+## @ D_NADH
+
+## Difference between $\Delta p_{30}$ and  normal $\Delta p$.
+## ~ mV
+## $\Delta p_{3,corr}$
+## @ Dp3_corr
+
+## Value of $\Delta p$ to which a$_3$ reduction reaction is maximally sensitive.
+## $\Delta p_{30}$
+## ~ mV
+## @ Dp_30
+
+## Value of $\Delta p$ at which $L_{CV}$ is zero under normal demand.
+## ~ mV
+## $\Delta p_{CV,0}$
+## @ Dp_CV0
+
+## Normal value of $\Delta p$
+## ~ mV
+## $\Delta p_n$
+## @ Dp_n
+
+## Parameter in the mitochondrial proton buffering relationship.
+## ~ dimensionless
+## @ dpH
+
+## Normal pH difference across the mitochondrial inner membrane.
+## ~ dimensionless
+## $\Delta pH_n$
+## @ DpH_n
+
+## Value of $E_1$ when the reducing substrate is NADH.
+## ~ mV
+## $E_{1,NADH}$
+## @ E1NADH
+
+## Normal value of $E_{1,NADH}$.
+## ~ mV
+## $E_{1,NADH,n}$
+## @ E1NADH_n
+
+## The energy provided by electron transfer to Cu$_{A,r}$.
+## ~ mV
+## @ E_1
+
+## Normal value of $E_1$.
+## ~ mV
+## $E_{1,n}$
+## @ E_1n
+
+## Energy provided by the transfer of four electrons from Cu$_{A,r}$ to a$_{3,o}$.
+## ~ mV
+## @ E_2
+
+## Standard redox potential for cytochrome a$_3$.
+## $\mathcal{E}_0 (\mathrm{a}_3)$
+## ~ mV
+## @ E_a30
+
+## Standard redox potential for Cu$_A$.
+## $\mathcal{E}_0 (\mathrm{Cu}_A)$
+## ~ mV
+## @ E_c0
+
+## Standard redox potential for NADH.
+## $\mathcal{E}_0 (\mathrm{NADH})$
+## ~ mV
+## @ E_N0
+
+## Normal resting value of $f_1$ and $f_2$.
+## ~ mM s$^{-1}$
+## @ f_n
+
+## Forward reaction rate for the reduction of Cu$_A$.
+## ~ s$^{-1}$
+## $k_1$
+## @ k1
+
+## Forward reaction rate for the reduction of Cu$_A$ at normal $\Delta p$.
+## ~ s$^{-1}$
+## $k_{1,0}$
+## @ k10
+
+## Forward reaction rate for the reduction of Cu$_A$ at normal $\Delta p$ and NADH.
+## ~ s$^{-1}$
+## $k_{1,n}$
+## @ k1_n
+
+## Forward reaction rate for the reduction of a$_3$.
+## ~ s$^{-1}$
+## $k_2$
+## @ k2
+
+## Normal forward reaction rate for the reduction of a$_3$.
+## ~ s$^{-1}$
+## $k_{2,n}$
+## @ k2_n
+
+## Forward reaction rate for the reduction of O$_2$.
+## ~ s$^{-1}$
+## $k_3$
+## @ k3
+
+## Apparent second order rate constant for reduction of O$_2$ at zero $\Delta p$.
+## ~ s$^{-1}$
+## $k_{3,0}$
+## @ k30
+
+## Constant controlling the depending of the leak rate $L_{lk}$ on $\Delta p$.
+## ~ mV$^{-1}$
+## @ k_lk2
+
+## Control parameter simulating the effect of adding uncouplers to the system.
+## ~ dimensionless
+## @ k_unc
+
+## Parameter controlling the sensitivity of Complex V flux to driving force.
+## ~ mV$^{-1}$
+## $k_{CV}$
+## @ kCV
+
+## Equilibrium constant for the Cu$_A$ reduction reaction.
+## ~ dimensionless
+## $K_{eq_1}$
+## @ Keq1
+
+## Normal value of the equilibrium constant for the Cu$_A$ reduction reaction.
+## ~ dimensionless
+## $K_{eq_1,n}$
+## @ Keq1_n
+
+## Equilibrium constant for the a$_3$ reduction reaction.
+## ~ dimensionless
+## $K_{eq_2}$
+## @ Keq2
+
+## Normal value of the equilibrium constant for the a$_3$ reduction reaction.
+## ~ dimensionless
+## $K_{eq_2,n}$
+## @ Keq2_n
+
+## Reverse reaction rate for the reduction of Cu$_A$.
+## ~ s$^{-1}$
+## $k_{-1}$
+## @ kn1
+
+## Reverse reaction rate for the reduction of a$_3$.
+## ~ s$^{-1}$
+## $k_{-2}$
+## @ kn2
+
+## Rate at which protons re-enter the mitochondrial matrix due to ADP phosphorylation.
+## ~ mM s$^{-1}$
+## @ L_CV
+
+## Normal Complex V flux as a fraction of maximum possible flux.
+## ~ dimensionless
+## $L_{CV,0}$
+## @ L_CV0
+
+## Normal fraction of proton entry into mitochondria which is due to ADP phosphorylation.
+## ~ dimensionless
+## $L_{CV,frac}$
+## @ L_CVfrac
+
+## The maximum rate of proton flow through Complex V.
+## ~ mM s$^{-1}$
+## $L_{CV,max}$
+## @ L_CVmax
+
+## The resting flow of protons into the matrix through Complex V.
+## ~ mM s$^{-1}$
+## $L_{CV,n}$
+## @ L_CVn
+
+## Rate at which protons re-enter the mitochondrial matrix via leak channels.
+## ~ mM s$^{-1}$
+## @ L_lk
+
+## Constant controlling the depending of the leak rate $L_{lk}$ on $\Delta p$.
+## ~ mM s$^{-1}$
+## @ L_lk0
+
+## Normal fraction of proton entry into mitochondria which is via leak channels.
+## ~ dimensionless
+## $L_{lk,frac}$
+## @ L_lkfrac
+
+## The resting flow of protons into the matrix via leak channels.
+## ~ mM s$^{-1}$
+## $L_{lk,n}$
+## @ L_lkn
+
+## The normal total flow of protons back into mitochondria.
+## ~ mM s$^{-1}$
+## @ L_n
+
+## Concentration of NADH in the mitochondria.
+## ~ mM
+## @ NADH
+
+## Normal concentration of NADH in the mitochondria.
+## ~ mM
+## $NADH_n$
+## @ NADHn
+
+## NAD/NADH ratio.
+## ~ dimensionless
+## $\frac{NAD}{NADH}$
+## @ NADNADHrat
+
+## Normal NAD/NADH ratio.
+## ~ dimensionless
+## $\frac{NAD_n}{NADH_n}$
+## @ NADNADHratn
+
+## Relative size of the NAD pool, used to estimate normal mitochondrial NADH.
+## ~ dimensionless
+## $NAD_{pool}$
+## @ NADpool
+
+## Total protons removed from the mitochondrial matrix by the reductions of a$_3$ and O$_2$.
+## ~ dimensionless
+## $p_{23}$
+## @ p23
+
+## Total protons removed from the mitochondrial matrix by the three modelled
+## electron transport reactions.
+## ~ dimensionless
+## @ p_tot
+
+## Mitochondrial pH.
+## ~ dimensionless
+## @ pH_m
+
+## Normal mitochondrial pH.
+## ~ dimensionless
+## $pH_{m,n}$
+## @ pH_mn
+
+## Extra-mitochondrial pH.
+## ~ dimensionless
+## @ pH_o
+
+## Normal extra-mitochondrial pH.
+## ~ dimensionless
+## $pH_{o,n}$
+## @ pH_on
+
+## Buffering capacity for protons in mitochondria.
+## ~ dimensionless
+## @ r_buffi
+
+## Parameter controlling the ratio of maximal to minimal rates of oxidative phosphorylation.
+## ~ dimensionless
+## @ r_CV
+
+## Protons pumped by Complex I.
+## ~ dimensionless
+## @ p_C1
+
+## Protons pumped by Complex III.
+## ~ dimensionless
+## @ p_C3
+
+## Total protons pumped when the reducing agent is NADH.
+## ~ dimensionless
+## $p_{tot,NADH}
+## @ p_totNADH
+

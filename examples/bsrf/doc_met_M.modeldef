@@ -1,0 +1,10 @@
+# documentation for shared BSRF metabolic submodel symbols
+
+## Proton buffering factor.
+## ~ mM
+## @ R_Hi_H
+
+## Factor relating the Complex V driving force to the membrane potential and demand.
+## ~ mV$^{-1}$
+## @ kCV
+

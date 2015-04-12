@@ -1,0 +1,12 @@
+# basic blood-pressure autoregulation test input
+@ 262
+>>> 0 
+!0
+: 0 
+= -1000 0 
+>>> 15 t P_a CBF v_p v_u v_c v_o Dpsi a H bred O2 XOv O2c r
+!!!
+: 1 P_a
+= 0 1000 100
+* 80 1000 -1
+* 180 1000 1

@@ -1,0 +1,15 @@
+# documentation for metabolic submodel symbols specific to submodel met_M_star
+
+## Shared reaction rate for all three electron transport reactions.
+## ~ mM s$^{-1}$
+## $f^{\star}$
+## @ f3
+
+## Proton buffering factor.
+## ~ mM
+## @ R_Hi_H
+
+## Factor relating the Complex V driving force to the membrane potential and demand.
+## ~ mV$^{-1}$
+## @ kCV
+

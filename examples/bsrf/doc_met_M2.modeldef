@@ -1,0 +1,47 @@
+# documentation for the fitted part of metabolic variant M1
+
+## Fitted intercept for the linear model for $f_1$.
+## $\lambda_{f_1}$
+## ~ mM s$^{-1}$
+## @ f1_0
+
+## Fitted linear dependence of $f_1$ on logarithm of Cu$_{A,ox}$.
+## $\lambda_{f_1,a}$
+## ~ mM s$^{-1}$
+## @ f1_a
+
+## Fitted intercept for the linear model for $f_2$.
+## $\lambda_{f_2}$
+## ~ mM s$^{-1}$
+## @ f2_0
+
+## Fitted linear dependence of $f_2$ on logarithm of a$_{3,red}$.
+## $\lambda_{f_2,b}$
+## ~ mM s$^{-1}$
+## @ f2_bred
+
+## Fitted intercept for the linear model for $f_3$.
+## $\lambda_{f_3}$
+## ~ mM s$^{-1}$
+## @ f3_0
+
+## Fitted linear dependence of $f_3$ on logarithm of O$_2$.
+## $\lambda_{f_3,O}$
+## ~ mM s$^{-1}$
+## @ f3_O2
+
+## Fitted intercept for the linear model for $L$.
+## $\lambda_{L}$
+## ~ mM s$^{-1}$
+## @ L_0
+
+## Fitted linear dependence of $L$ on $\theta$.
+## $\lambda_{L,\theta}$
+## ~ mM s$^{-1}$
+## @ L_th
+
+## Fitted linear dependence of $L$ on $\Delta p$.
+## $\lambda_{L,p}$
+## ~ mM s$^{-1}$ mV$^{-1}$
+## @ L_Dp
+

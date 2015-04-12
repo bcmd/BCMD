@@ -1,5 +1,5 @@
 Brain/Circulation Model Developer
-BCMD v0.5b
+BCMD v0.6b
 
 Please read the manual, which can be found in the 'doc' directory.
 

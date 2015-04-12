@@ -1,0 +1,93 @@
+# blood flow/autoregulation parts of BSRF
+
+@input Pa_CO2
+@output Pa_CO2 r v_p v_u v_c v_o eta mu
+@extern O2c
+
+# blood flow & autoregulation
+# simplified linear model in P_a only, with coefficients to be fitted from data
+r : r = lam_0 + lam_p / P_a
+
+# diff eqs to filter autoreg stimuli
+v_p' = 1/t_p*(P_a - v_p)
+v_c' = 1/t_c*(Pa_CO2 - v_c)
+v_o' = 1/t_o*(O2c - v_o)
+v_u' = 1/t_u*(u - v_u)
+
+# intermediate variables
+G = K_G * r^4
+eta = R_autp*(v_p/v_pn - 1)
+      + R_auto*(v_o/v_on - 1)
+      + R_autc*(1 - v_c/v_cn)
+      + R_autu*(1 - v_u/v_un)
+mu = k_aut * (exp(eta) - 1) / (exp(eta) + 1)
+
+# default/initial values
+Pa_CO2 := Pa_CO2n
+r := r_n
+v_p := v_pn
+v_c := v_cn
+v_o := v_on
+v_u := v_un
+
+# constraints
+r >= 0
+
+# parameters
+Gn := CBFn/(P_an-P_vn)
+K_G := Gn/pow(r_n, 4)
+Pa_CO2n := 40
+R_autc := 2.2
+R_auto := 1.5
+R_autp := 4
+R_autu := 0.5
+r_n := 0.0187
+t_c := 5
+t_o := 20
+t_p := 5
+t_u := 0.5
+v_cn := Pa_CO2n
+v_on := O2c_n
+v_pn := P_an
+v_un := u_n
+k_aut := 1
+
+# these coefficients are fitted from mixed data including P_a steady state
+# data, on the basis that there's no autoreg here, so we might as well
+# prioritise the pressure
+# needless to say, it's a terrible model however you fit it...
+
+# Call:
+# lm(formula = r ~ I(1/P_a), data = pax)
+#
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -1.815e-03 -2.930e-04  2.519e-05  2.795e-04  1.994e-03 
+#
+# Coefficients:
+#              Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) 1.664e-02  7.946e-05  209.38   <2e-16 ***
+# I(1/P_a)    2.520e-01  7.037e-03   35.82   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.00045 on 1199 degrees of freedom
+# Multiple R-squared:  0.5169,	Adjusted R-squared:  0.5165 
+# F-statistic:  1283 on 1 and 1199 DF,  p-value: < 2.2e-16
+
+lam_0 := 1.650e-02
+lam_p := 2.483e-01
+
+# cluster tags for symbols belonging to this submodel
+## + Autoregulation
+## @ r eta v_p v_c v_o v_u t_c t_p t_o t_u v_on v_un v_pn v_cn r_n K_G G
+## + Autoregulation
+## @ R_auto R_autc R_autp R_autu Pa_CO2 Pa_CO2n Gn
+## + Autoregulation
+## @ lam_0 lam_p k_aut mu
+
+# externals:
+# bsrf_link: P_a P_an P_vn CBFn u u_n
+# bsrf_oxy: O2c O2c_n
+
+@import doc_haemo_shared doc_haemo_B4

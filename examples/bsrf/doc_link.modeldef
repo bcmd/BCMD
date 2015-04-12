@@ -1,0 +1,55 @@
+# documentation comments for shared BS/BSRF inter-submodel symbols
+
+## Mean arterial blood pressure.
+## ~ mmHg
+## $P_{a}$
+## @ P_a
+
+## Parameter indicating metabolic demand.
+## ~ dimensionless
+## @ u
+
+## Oxygen flux from blood to tissue.
+## ~ mM s$^{-1}$
+## $J_{O_{2}}$
+## @ J_O2
+
+## Normal arterial blood pressure.
+## ~ mmHg
+## $P_{a,n}$
+## @ P_an
+
+## Venous blood pressure.
+## ~ mmHg
+## $P_{v}$
+## @ P_v
+
+## Normal venous blood pressure.
+## ~ mmHg
+## $P_{v,n}$
+## @ P_vn
+
+## Normal demand.
+## ~ dimensionless
+## $u_{n}$
+## @ u_n
+
+## Normal metabolic rate of oxygen consumption.
+## ~ mM s$^{-1}$
+## $CMRO_{2,n}$
+## @ CMRO2_n
+
+## Diffusion rate for oxygen between capillaries and mitochondria.
+## ~ s$^{-1}$
+## $D_{O_{2}}$
+## @ D_O2
+
+## Normal oxygen flux from blood to tissue.
+## ~ mM s$^{-1}$
+## $J_{O_{2,n}}$
+## @ J_O2n
+
+## Time over which the system evolves.
+## ~ s
+## @ t
+

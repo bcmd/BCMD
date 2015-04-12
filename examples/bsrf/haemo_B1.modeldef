@@ -1,0 +1,99 @@
+# blood flow/autoregulation parts of BSRF
+
+@input Pa_CO2
+@output Pa_CO2 r v_p v_u v_c v_o eta mu
+@extern O2c
+
+# blood flow & autoregulation
+# simplified linear model in mu & P_a, with coefficients to be fitted from data
+r : r = lam_0 + lam_p / P_a + lam_mu * mu + lam_p_mu * mu / P_a
+
+# diff eqs to filter autoreg stimuli
+v_p' = 1/t_p*(P_a - v_p)
+v_c' = 1/t_c*(Pa_CO2 - v_c)
+v_o' = 1/t_o*(O2c - v_o)
+v_u' = 1/t_u*(u - v_u)
+
+# intermediate variables
+G = K_G * r^4
+eta = R_autp*(v_p/v_pn - 1)
+      + R_auto*(v_o/v_on - 1)
+      + R_autc*(1 - v_c/v_cn)
+      + R_autu*(1 - v_u/v_un)
+mu = k_aut * (exp(eta) - 1) / (exp(eta) + 1)
+
+# default/initial values
+Pa_CO2 := Pa_CO2n
+r := r_n
+v_p := v_pn
+v_c := v_cn
+v_o := v_on
+v_u := v_un
+
+# constraints
+r >= 0
+
+# parameters
+Gn := CBFn/(P_an-P_vn)
+K_G := Gn/pow(r_n, 4)
+Pa_CO2n := 40
+R_autc := 2.2
+R_auto := 1.5
+R_autp := 4
+R_autu := 0.5
+r_n := 0.0187
+t_c := 5
+t_o := 20
+t_p := 5
+t_u := 0.5
+v_cn := Pa_CO2n
+v_on := O2c_n
+v_pn := P_an
+v_un := u_n
+k_aut := 1
+
+
+# the coefficients below are fitted from mixed data that includes
+# P_a steady state simulations, and should thus model the extremes of the
+# pressure range better, possibly at a small cost to the dynamic sim accuracy
+# (in practice this seems not to be a problem)
+
+# Call:
+# lm(formula = r ~ mu * I(1/P_a), data = pax)
+#
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -1.311e-04 -1.323e-05 -5.590e-07  1.754e-05  1.677e-04 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  2.507e-02  1.476e-05 1698.31   <2e-16 ***
+# mu          -4.422e-04  6.647e-06  -66.52   <2e-16 ***
+# I(1/P_a)    -6.327e-01  1.526e-03 -414.54   <2e-16 ***
+# mu:I(1/P_a) -5.286e-01  1.075e-03 -491.96   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 2.587e-05 on 1197 degrees of freedom
+# Multiple R-squared:  0.9984,	Adjusted R-squared:  0.9984 
+# F-statistic: 2.498e+05 on 3 and 1197 DF,  p-value: < 2.2e-16
+
+lam_0 := 2.507e-02
+lam_mu := -4.422e-04
+lam_p := -6.327e-01
+lam_p_mu := -5.286e-01
+
+
+# cluster tags for symbols belonging to this submodel
+## + Autoregulation
+## @ r eta v_p v_c v_o v_u t_c t_p t_o t_u v_on v_un v_pn v_cn r_n K_G G
+## + Autoregulation
+## @ R_auto R_autc R_autp R_autu Pa_CO2 Pa_CO2n Gn
+## + Autoregulation
+## @ lam_0 lam_p lam_mu lam_p_mu k_aut mu
+
+# externals:
+# bsrf_link: P_a P_an P_vn CBFn u u_n
+# bsrf_oxy: O2c O2c_n
+
+@import doc_haemo_shared doc_haemo_B1

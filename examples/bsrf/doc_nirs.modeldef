@@ -1,0 +1,69 @@
+# documentation comments for shared BS/BSRF measurement submodel
+
+## Rate of cerebral oxygen metabolism.
+## ~ mM s$^{-1}$
+## $CMRO_{2}$
+## @ CMRO2
+
+## Blood velocity in the middle cerebral artery.
+## ~ cm s$^{-1}$
+## $V_{mca}$
+## @ Vmca
+
+## Scale constant relating blood flow to arterial velocity.
+## ~ cm
+## @ CBFscale
+
+## Cytochrome c oxidase signal measured by NIRS.
+## ~ uM
+## $\Delta{}oxCCO$
+## @ CCO
+
+## Signal offset for the NIRS CCO measurement.
+## ~ uM
+## $\Delta{}oxCCO_{off}$
+## @ CCO_offset
+
+## Relative arterial blood volume.
+## ~ dimensionless
+## $V_{a}$
+## @ Vol_art
+
+## Normal relative arterial blood volume.
+## ~ dimensionless
+## $V_{a,n}$
+## @ Vol_artn
+
+## Oxygenated haemoglobin signal measured by NIRS.
+## ~ uM
+## $HbO_{2}$
+## @ HbO2
+
+## Deoxygenated haemoglobin signal measured by NIRS.
+## ~ uM
+## @ HHb
+
+## Total haemoglobin signal measured by NIRS.
+## ~ uM
+## @ HbT
+
+## Total oxygenation index.
+## ~ dimensionless
+## @ TOI
+
+## Factor to convert model haemoglobin concentration to instrumental units.
+## Scales for blood fraction of brain volume, mM to $\mu$M, and number of binding sites.
+## ~ dimensionless
+## $blood_{hb}$
+## @ blood_hb
+
+## Normal volume ratio of veins to arteries in brain tissue.
+## ~ dimensionless
+## $VArat_{n}$
+## @ VArat_n
+
+## Relative venous blood volume.
+## ~ dimensionless
+## $V_{v}$
+## @ Vol_ven
+

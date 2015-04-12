@@ -1,0 +1,12 @@
+# documentation comments for details specific to the B3 blood flow model
+
+## Intercept of the fitted linear model for blood vessel radius.
+## ~ cm
+## $\lambda_0$
+## @ lam_0
+
+## Fitted linear dependence of blood vessel radius on autoregulatory stimuli.
+## ~ cm
+## $\lambda_{\mu}$
+## @ lam_mu
+

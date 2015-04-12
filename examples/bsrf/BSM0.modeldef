@@ -1,0 +1,14 @@
+# BSRF model using (infeasible) metabolic variant M0
+
+# portions shared with BrainSignals
+@import oxy link nirs
+
+# selected variants
+@import haemo_BS
+@import met_M met_M0
+
+# some additional outputs for development purposes
+@output f1 f2 f3 L R_Hi
+
+# documentation
+@import doc_roots

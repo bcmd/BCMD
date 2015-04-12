@@ -1,0 +1,63 @@
+# most simplified of our metabolic rate models
+# in this case, we eliminate f1 and f2, using f3 for all 3 rates
+# (NB: in the paper and the fitting summaries below we refer to this as f star, but
+# internally we call it f3 just to maintain consistency with the measurement model)
+f3 = f3_0
+     + f3_p * Dp
+     + f3_O2 * log(O2)
+     + f3_a * log(a)
+L = L_0 + L_th * theta + L_Dp * Dp
+
+# Call:
+# lm(formula = f.star ~ Dp + log(O2) + log(a), data = M1)
+#
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -2.682e-04 -5.780e-06  1.400e-07  6.180e-06  4.294e-04 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  1.334e+01  6.394e-03    2086   <2e-16 ***
+# Dp          -5.317e-02  2.734e-05   -1945   <2e-16 ***
+# log(O2)      8.064e-02  3.889e-05    2074   <2e-16 ***
+# log(a)       1.308e+00  6.561e-04    1993   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 1.34e-05 on 9996 degrees of freedom
+# Multiple R-squared:      1,	Adjusted R-squared:      1 
+# F-statistic: 6.332e+08 on 3 and 9996 DF,  p-value: < 2.2e-16
+
+f3_0 := 1.334e+01
+f3_p := -5.317e-02
+f3_a := 1.308e+00
+f3_O2 := 8.064e-02
+
+# Call:
+# lm(formula = L ~ theta + Dp, data = M1x)
+#
+# Residuals:
+#       Min        1Q    Median        3Q       Max 
+# -0.003635 -0.001750 -0.001522 -0.000875  0.233762 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) -15.339464   0.025515  -601.2   <2e-16 ***
+# theta         5.665904   0.001886  3005.0   <2e-16 ***
+# Dp            0.097097   0.000137   708.9   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.009237 on 10458 degrees of freedom
+# Multiple R-squared:  0.9994,	Adjusted R-squared:  0.9994 
+# F-statistic: 8.068e+06 on 2 and 10458 DF,  p-value: < 2.2e-16
+
+L_0 := -15.339464
+L_th := 5.665904
+L_Dp := 0.097097
+
+## + Metabolism
+## @ f3_0 f3_p f3_a f3_O2 L_0 L_th L_Dp
+
+@import doc_met_M3
+

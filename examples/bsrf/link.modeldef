@@ -1,0 +1,32 @@
+# linkage elements of BSRF
+# these crossover or intermediate between the main submodels
+
+@input P_a u
+@output P_a u J_O2
+@extern O2 O2c CBF
+
+# intermediate variable
+J_O2 = fmin(D_O2*(O2c-O2), CBF*XOa)
+
+# initial/default values
+P_a := P_an
+P_an := 100
+P_v := P_vn
+P_vn := 4
+u := u_n
+u_n := 1
+
+# parameters
+CMRO2_n := 0.034
+D_O2 := J_O2n/(O2c_n-O2_n)
+J_O2n := CMRO2_n
+
+## + Link
+## @ J_O2 P_a P_an P_v P_vn u u_n CMRO2_n D_O2 J_O2n
+
+# externals:
+# bsrf_met: O2 O2n
+# bsrf_oxy: O2c O2c_n CBF XOa
+
+@import doc_link
+

@@ -1,0 +1,29 @@
+input requirements:
+
+* modelname
+- program name    (default BCMD/BUILD/modelname.model)
+
+- get the following from input files
+- ideally, time series data should all come from a single CSV (or equiv),
+  indexed by args and/or a config file
+* times
+* variables
+* parameters
+* inputs
+
+- workdir         (default: BCMD/BUILD/abc/modelname_timestamp)
+  - delete?       (default: false)
+- abcio dir       (default: workdir/abcio)
+- pickling        (default: true)
+
+- baseSeq         (default: [])
+
+- particles       (default: 500)
+- nbatch          (default: 8?)
+
+- model kernel    (default: 0.7)
+- distance func   (default: loglik(sigma=(TBD * sd of comparison data)))
+
+- epsilons        (default: final=TBD)
+- alpha           (default: 0.75)
+

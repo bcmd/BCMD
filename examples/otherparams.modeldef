@@ -1,0 +1,149 @@
+# large number of miscellaneous parameter settings from otherparams.dt
+# attempted translation from godawful mess of BRAINCIRC
+
+# NB: this file does not define a model of it's own, it is
+# only meaningful as an @import into another modeldef
+
+# parameters with directly-assigned values
+ADPan := 0.145
+AMPan := 0.005
+ATPan := 1.85
+c1_ATP := 0.3
+c2_ATP := 0.3
+Ca_an := 2.5
+Ca_csf := 2.1
+Cl_an := 102.0
+Cl_csf := 119.0
+_eKn := 4.0
+_eNan := 138.0
+gluc_a := 5.11
+gluc_an := 5.11
+gluc_vn := 2.0
+henry_CO2 := 0.033
+henry_CO2t := 0.07
+henry_N2 := 0.0007
+henry_O2 := 0.0014
+K_a := 4.0
+K_an := 4.0
+k_BiC_ht := 4.0
+K_csf := 2.8
+k_ecgluc_ht := 0.00001
+k_Hyleak_ht := 0.0001
+k_KK_ht := 1e+04
+Kn := 4.0
+k_PyL_ht := 0.5
+L0_a := 2.0
+_L0n := 2.0
+L0n := 2.0
+Mass_Br := 1300.0
+_mFADHn := 0.1
+_mFADn := 1.22
+Mg_an := 1.13
+Mg_csf := 0.3
+_mO2frac := 0.5
+_mO2n := _mO2frac*_O2n
+_mPhosn := 6.75
+Na_a := 138.0
+Na_an := 138.0
+_Nan := 10.0
+Nan := 138.0
+_O2nw := 0.045
+Osm_csf := 295.0
+Osm_pl := 295.0
+P_a := 100
+Pa_CO2 := 40.0
+Pa_CO2n := 40.0
+P_an := 100.0
+PaO2 := 95.0
+PaO2n := 95.0
+PD_mem_tisn := -80.0
+PFK_SA := 99.5
+pH_an := 7.41
+pH_en := 7.3
+pH_mc_diff := 0.6
+Phosn := 1.0
+pH_tn := 7.0
+pH_vn := 7.4
+PtCO2n := 40.0
+PtO2n := 5.0
+PvCO2n := 51.0
+PvO2n := 35.8
+SaO2sup := SaO2supp/100.0
+V_glucw := 0.0133
+X_H_a_frac := 0.02
+X_H_v_fracn := 0.2
+X_O4_a_frac := 0.9
+X_O4_a_fracn := 0.9
+X_O4_v_fracn := 0.6
+
+# parameters declared with no value in the original file
+# SaO2supp
+
+# parameters defined by intermediate expressions
+BiC_a := BiC_an
+BiC_an := k_CH_eq*CO2_an/Hy_an
+BiCn := 0.95*k_CH_eq*CO2n/Hyn
+_BiCn := k_CH_eq*_CO2n/_Hyn
+CO2_an := Pa_CO2n*henry_CO2
+CO2_a := Pa_CO2*henry_CO2
+CO2n := CO2_an + 0.2*netCO2prodn*Vol_BrW/2.0/qn
+_CO2n := PtCO2n*henry_CO2t
+CO2_vn := PvCO2n*henry_CO2
+_eBiCn := k_CH_eq*_eCO2n/_eHyn
+_eCO2n := 0.5*_CO2n + 0.5*CO2n
+_eglucn := 0.8*_glucn + 0.2*glucn
+_eHyn := 1000.0*pow(10.0, -pH_en)
+_eL0n := 0.9*_L0n + 0.1*L0n
+_eLn := _eL0n*_eHyn/k_LH_eq
+_eO2n := 0.8*_O2n + 0.2*O2n
+_ePy0n := _Py0n
+glucn := gluc_an - CMRglucn*Vol_BrW/2.0/qn
+Hy_a := k_CH_eq*CO2_a/BiC_a
+Hy_an := 1000.0*pow(10.0, -pH_an)
+_Hyn := 1000.0*pow(10.0, -pH_tn)
+Hy_vn := 1000.0*pow(10.0, -pH_vn)
+k_BiC := _eBiCn*(R_csfout)/(BiCn - _eBiCn/k_BiC_eq)
+k_BiC_eq := 1
+k_KATP := Vol_BrW*netATPusen*(1.0 - ATP_frac)/_ATPn/pow(_eKn, 2)/pow(_Nan, 3)
+k_KK := _eKn*(R_csfout)/(Kn - _eKn/k_KK_eq)
+k_KK_eq := 1
+k_L0H := -CMRlacn*Vol_BrW/(_eL0n*_eHyn - L0n*Hyn)
+_Kn := 180
+k_nBiC := _eBiCn*(R_csfout)/(k_BiC_eq*BiCn - _eBiCn)
+k_nKK := _eKn*(R_csfout)/(k_KK_eq*Kn - _eKn)
+k_nPyL := -CMRlacn*Vol_BrW/Vol_exm/(k_PyL_eq*_NADHn*_Py0n*_Hyn - _L0n*_NADn)
+k_PyL_eq := _L0n*_NADn/(_Py0n*_NADHn*_Hyn)/0.9
+k_PyL := k_PyL_eq*k_nPyL
+_lacn := _Hyn*_L0n/k_LH_eq
+L_a := L0_a*Hy_a/k_LH_eq
+Ln := L0n*Hyn/k_LH_eq
+m1_ATP := 1.0 - c1_ATP
+m2_ATP := 1.0 - c2_ATP
+_mBiCn := k_CH_eq*_mCO2n/_mHyn
+_mCO2n := 1.2*_CO2n
+_mHyn := 1000.0*pow(10.0, -pH_mn)
+_mPy0n := 0.8*_Py0n*_Hyn/_mHyn
+niro_a_frac := Vol_artn/(Vol_artn + Vol_venn)
+O2_an := PaO2n*henry_O2
+O2_a := (O2_a_temp_SaO2 * O2_a_temp_phi/(1-O2_a_temp_SaO2))^0.4
+O2_a_temp_phi := (1.0 + k_XH_eq*Hy_a)/(k_XO4_eq + k_XHO_eq*k_XH_eq*Hy_a)
+O2_a_temp_SaO2 := fmin(SaO2sup, 0.995)
+_O2n := Mass_Br*(_O2nw/Vol_BrW)
+O2tot_a := 4.0*(X_O4_a + X_O4_H_a) + O2_a
+O2totn := 4.0*(X_O4n + X_O4_Hn) + O2n
+O2_vn := PvO2n*henry_O2
+pH_a := -log10(Hy_a/1000.0)
+pH_bn := -log10(Hyn/1000.0)
+pH_mn := pH_tn + pH_mc_diff
+_Pyn := _Py0n*_Hyn/k_PyH_eq
+X_O4_vn := -1.0/4.0/qn*k_OOn*(O2n - _O2n) + 1/4.0*((O2_an - _O2n) + 4.0*X_O4_an)
+X_vn := X_totn - X_O4_vn
+
+
+# constraints previously encoded in param functions
+k_BiC >= 0
+k_KK >= 0
+k_nBiC >= 0
+k_nKK >= 0
+
+

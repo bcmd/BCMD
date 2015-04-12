@@ -1,0 +1,11 @@
+# documentation comments for details specific to the B4 blood flow model
+
+## Intercept of the fitted linear model for blood vessel radius.
+## ~ cm
+## $\lambda_0$
+## @ lam_0
+
+## Fitted linear dependence of blood vessel radius on reciprocal of blood pressure.
+## ~ cm mmHg
+## $\lambda_{P_{a}}$
+## @ lam_p

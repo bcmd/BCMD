@@ -1,0 +1,37 @@
+# documentation for symbols specific to metabolic submodel variant M3
+
+## Fitted intercept for the linear model for $f^{\star}$.
+## $\lambda_{f^{\star}}$
+## ~ mM s$^{-1}$
+## @ f3_0
+
+## Fitted linear dependence of $f^{\star}$ on logarithm of Cu$_{A,ox}$.
+## $\lambda_{f^{\star},a}$
+## ~ mM s$^{-1}$
+## @ f3_a
+
+## Fitted linear dependence of $f^{\star}$ on logarithm of O$_2$.
+## $\lambda_{f^{\star},O}$
+## ~ mM s$^{-1}$
+## @ f3_O2
+
+## Fitted linear dependence of $f^{\star}$ on $\Delta p$.
+## $\lambda_{f^{\star},p}$
+## ~ mM s$^{-1}$
+## @ f3_p
+
+## Fitted intercept for the linear model for $L$.
+## $\lambda_{L}$
+## ~ mM s$^{-1}$
+## @ L_0
+
+## Fitted linear dependence of $L$ on $\theta$.
+## $\lambda_{L,\theta}$
+## ~ mM s$^{-1}$
+## @ L_th
+
+## Fitted linear dependence of $L$ on $\Delta p$.
+## $\lambda_{L,p}$
+## ~ mM s$^{-1}$ mV$^{-1}$
+## @ L_Dp
+

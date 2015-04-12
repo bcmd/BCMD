@@ -1,0 +1,107 @@
+# documentation comments for shared BS/BSRF blood flow symbols
+
+## Effective conductance of the whole blood flow compartment.
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+## @ G
+
+## Merged autoregulation stimulus.
+## ~ dimensionless
+## $\eta$
+## @ eta
+
+## Effective strength of the autoregulation reponse.
+## ~ dimensionless
+## $\mu$
+## @ mu
+
+## Arterial partial pressure of carbon dioxide.
+## ~ mmHg
+## $Pa_{CO_2}$
+## @ Pa_CO2
+
+## Normal arterial partial pressure of carbon dioxide.
+## ~ mmHg
+## $Pa_{CO_{2,n}}$
+## @ Pa_CO2n
+
+## Normal effective blood vessel radius.
+## ~ cm
+## $r_n$
+## @ r_n
+
+## Normal filtered blood pressure.
+## ~ mmHg
+## $\nu_{P_a,n}
+## @ v_pn
+
+## Normal filtered carbon dioxide partial pressure.
+## ~ mmHg
+## $\nu_{CO_2,n}$
+## @ v_cn
+
+## Normal filtered capillary oxygen concentration.
+## ~ mM
+## $\nu_{O_2,n}$
+## @ v_on
+
+## Normal filtered demand.
+## ~ dimensionless
+## $\nu_{u,n}$
+## @ v_un
+
+## Normal blood vessel conductance.
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$
+## $G_n$
+## @ Gn
+
+## Proportionality constant in Poiseuille relation for conductance.
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ mmHg$^{-1}$ s$^{-1}$ cm$^{-4}$
+## $K_G$
+## @ K_G
+
+## Autoregulatory reactivity to carbon dioxide.
+## ~ dimensionless
+## $R_{CO_2}$
+## @ R_autc
+
+## Autoregulatory reactivity to oxygen.
+## ~ dimensionless
+## $R_{O_2}$
+## @ R_auto
+
+## Autoregulatory reactivity to blood pressure.
+## ~ dimensionless
+## $R_{P_a}$
+## @ R_autp
+
+## Autoregulatory reactivity to demand.
+## ~ dimensionless
+## $R_{u}$
+## @ R_autu
+
+## Filter time constant for stimulus effect of carbon dioxide.
+## ~ s
+## $\tau_{CO_2}
+## @ t_c
+
+## Filter time constant for stimulus effect of capillary oxygen.
+## ~ s
+## $\tau_{O_2}
+## @ t_o
+
+## Filter time constant for stimulus effect of blood pressure.
+## ~ s
+## $\tau_{P_a}
+## @ t_p
+
+## Filter time constant for stimulus effect of demand.
+## ~ s
+## $\tau_{u}
+## @ t_u
+
+## Overall functioning of autoregulatory response.
+## ~ dimensionless
+## $k_{aut}$
+## @ k_aut
+
+

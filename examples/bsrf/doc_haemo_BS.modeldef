@@ -1,0 +1,119 @@
+# documentation comments for details specific to the BrainSignals blood flow submodel
+
+## Thickness of the blood vessel walls.
+## ~ cm
+## @ h
+
+## Normal thickness of the blood vessel walls.
+## ~ cm
+## @ h_n
+
+## Thickness of the blood vessel walls at which radius is $r_0$.
+## ~ cm
+## @ h_0
+
+## Parameter controlling the sensitivity of $\sigma_e$ to vessel radius.
+## ~ dimensionless
+## $K_{\sigma}$
+## @ K_sigma
+
+## Upper bound for the transformed stimulus $\mu$.
+## ~ dimensionless
+## $\mu_{max}$
+## @ mu_max
+
+## Lower bound for the transformed stimulus $\mu$.
+## ~ dimensionless
+## $\mu_{min}$
+## @ mu_min
+
+## Normal value for the transformed stimulus $\mu$.
+## ~ dimensionless
+## $\mu_n$
+## @ mu_n
+
+## Exponent in the muscular tension relationship.
+## ~ dimensionless
+## @ n_m
+
+## Average pressure in the blood vessels.
+## ~ mm Hg
+## @ P_1
+
+## Normal value for the average pressure in the blood vessels.
+## ~ mm Hg
+## $P_{1,n}$
+## @ P_1n
+
+## Intracranial pressure.
+## ~ mm Hg
+## @ P_ic
+
+## Normal intracranial pressure.
+## ~ mm Hg
+## @ P_icn
+
+## Radius in the elastic tension relationship.
+## ~ cm
+## @ r_0
+
+## Vessel radius at which muscular tension is maximal.
+## ~ cm
+## @ r_m
+
+## Radius in the muscular tension relationship.
+## ~ cm
+## @ r_t
+
+## Pressure at which blood vessels collapse.
+## ~ mm Hg
+## $\sigma_{coll}$
+## @ sigma_coll
+
+## Elastic stress in blood vessel walls.
+## ~ mm Hg
+## $\sigma_e$
+## @ sigma_e
+
+## Parameter in the elastic tension relationship.
+## ~ mm Hg
+## $\sigma_{e,0}$
+## @ sigma_e0
+
+## Normal elastic stress in blood vessel walls.
+## ~ mm Hg
+## $\sigma_{e,n}$
+## @ sigma_en
+
+## Elastic tension in the blood vessel walls.
+## ~ mm Hg cm
+## @ T_e
+
+## Normal elastic tension in the blood vessel walls.
+## ~ mm Hg cm
+## $T_{e,n}$
+## @ T_en
+
+## Muscular tension in the blood vessel walls.
+## ~ mm Hg cm
+## @ T_m
+
+## Maximal muscular tension in the blood vessel walls.
+## ~ mm Hg cm
+## @ T_max
+
+## Maximal muscular tension under normal regulatory stimulus ($\mu = \mu_n$).
+## ~ mm Hg cm
+## $T_{max,0}$
+## @ T_max0
+
+## Normal maximal muscular tension.
+## ~ mm Hg cm
+## $T_{max,n}$
+## @ T_maxn
+
+## Normal muscular tension in the blood vessel walls.
+## ~ mm Hg cm
+## $T_{m,n}$
+## @ T_mn
+

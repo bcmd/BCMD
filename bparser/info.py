@@ -36,6 +36,7 @@ CONFIG = { 'name' : 'unknown',
            'css-src' : None,
            'eq-align': False,
            'latex-display-style': True,
+           'latex-include-code': True
           }
 
 # functions to output information about the structure of a model
@@ -108,6 +109,11 @@ def logModelInfo(model, config):
         else:
             logger.message('(NB: unused variables will NOT be calculated)')
             
+    undoc = [ x for x in model['symbols'] if not [y for y in model['symbols'][x]['docs'] if not y.startswith('+')] ]
+    if undoc:
+        logger.message('\nThe following symbols are not documented:')
+        for name in sorted(undoc, key=str.lower): logger.message(name)
+
     unassigned = set(model['symlist']) - model['assigned']
     if unassigned:
         logger.warn('\nThe following symbols are never explicitly assigned (will default to 0):')
@@ -206,6 +212,11 @@ def modelInfo(model, config):
     if model['unused']:
         result += '\nThe following intermediate variables or parameters are declared but unused:\n'
         for name in sorted(model['unused'], key=str.lower):  result += name + '\n'
+    
+    undoc = [ x for x in model['symbols'] if not [y for y in model['symbols'][x]['docs'] if not y.startswith('+')] ]
+    if undoc:
+        result += '\nThe following symbols are not documented:\n'
+        for name in sorted(undoc, key=str.lower): result += name + '\n'
     
     unassigned = set(model['symlist']) - model['assigned']
     if unassigned:

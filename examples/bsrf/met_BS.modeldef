@@ -1,0 +1,145 @@
+# Full BrainSignals metabolic submodel framed as a BSRF component
+
+# no direct inputs (at the moment), just refs to other submodels
+
+@output Dpsi H O2 a bred
+@extern J_O2
+
+# metabolic reactions
+# note that compartment volumes have been divided into the stoichiometry
+4 [a] + p1/R_Hi [H] -> {f1}
+p2/R_Hi [H] -> 4 [a] + 4 [bred] {f2}
+[O2] + 4 [bred] + p3/R_Hi [H] -> {f3}
+-> 1/R_Hi [H] {L}
+-> 1/Vol_mit [O2] {J_O2}
+Dpsi' = (p2*f2+p1*f1+p3*f3-L)/C_im
+
+# intermediate  variables
+Keq1 = 10^(-1/Z*(p1*Dp/4 - E_1))
+k1 = k10*exp(-ck1*(Dp-Dp_n))
+kn1 = k1/Keq1
+f1 = k1*a-kn1*ared
+Keq2 = 10^(-1.0/Z*(p2*Dp/4.0 - E_2))
+k2 = k2_n*exp(-ck2*(Dp-Dp_n))
+kn2 = k2/Keq2
+f2 = k2*ared*b-kn2*a*bred
+f3 = k3*O2*bred*exp(-c3*(Dp-Dp_30))/(1+exp(-c3*(Dp-Dp_30)))
+theta = kCV*(Dp + Z*log10(u) - Dp_CV0)
+L_CV = CVinh*L_CVmax*(1 - exp(-theta))/(1 + r_CV*exp(-theta))
+L_lk = k_unc*L_lk0*(exp(Dp*k_lk2)-1)
+L = L_CV + L_lk
+ared = cytox_tot - a
+b = cytox_tot - bred
+Dp = Dpsi + Z * (pH_m - pH_o)
+pH_m = -log10(H/1000)
+r_buffi = C_buffi/C_0i
+C_0i = (10^(-pH_m) - 10^(-pH_m-dpH)) / dpH
+R_Hi = r_buffi
+
+C_NADH = Z/2*log10(1/NADNADHrat)
+cytox_tot = cytox_tot_tis/Vol_mit
+Dp_30 = Dp_n + Dp3_corr
+E1NADH = (E_c0 - E_N0) + C_NADH
+k3 = k30/(exp(-c3*(-Dp_30))/(1+exp(-c3*(-Dp_30))))
+kCV = -1/(Dp_n-Dp_CV0)*log((1-L_CV0)/(1+r_CV*L_CV0))
+L_CVfrac = 1 - L_lkfrac
+L_CVmax = L_CVn/L_CV0
+L_n = p_tot*f_n
+NADH = NADpool/(1+NADNADHrat)
+p1 = p_tot - p23
+p_totNADH = p_C1 + p_C3 + p23
+
+# initial values of root variables are all their 'normal' values
+a := a_n
+bred := bred_n
+O2 := O2_n
+H := H_n
+Dpsi := Dpsi_n
+
+# parameters
+a_frac_n := 0.8
+a_n := cytox_tot*a_frac_n
+ared_n := cytox_tot - a_n
+b_n := cytox_tot - bred_n
+bred_n := f_n/k3/O2_n/(exp(-c3*(Dp_n-Dp_30))/(1+exp(-c3*(Dp_n-Dp_30))))
+c3 := 0.11
+C_buffi := 0.022
+C_im := 6.75e-3
+ck1 := 0.01
+ck2 := 0.02
+C_NADH_n := Z/2*log10(1/NADNADHratn)
+CVinh := 1.0
+cytox_tot_tis := 0.0055
+D_NADH := 0.01
+Dp3_corr := -25
+Dp_CV0 := 90
+dpH := 0.001
+DpH_n := pH_mn - pH_on
+Dp_n := Dpsi_n+Z*DpH_n
+Dpsi_n := 145
+E1NADH_n := (E_c0 - E_N0) + C_NADH_n
+E_2 := (E_a30 - E_c0)
+E_a30 := 350
+E_c0 := 247
+E_N0 := -320
+f_n := CMRO2_n/Vol_mit
+H_n := 10^(3-pH_mn)
+k1_n := f_n/(a_n-1/Keq1_n*ared_n)
+k2_n := f_n/(ared_n*b_n-1/Keq2_n*a_n*bred_n)
+k30 := 2.5e+5
+Keq1_n := 10.0^(-1/Z*(p1*Dp_n/4 - E_1n))
+Keq2_n := 10.0^(-1/Z*(p2*Dp_n/4 - E_2))
+k_lk2 := 0.038
+k_unc := 1
+L_CV0 := 0.4
+L_CVn := L_n*L_CVfrac
+L_lk0 := L_lkn/(exp(Dp_n*k_lk2)-1)
+L_lkfrac := 0.25
+L_lkn := L_n*L_lkfrac
+
+NADHn := NADpool/(1+NADNADHratn)
+NADNADHratn := 9
+NADNADHrat := NADNADHratn/pow(u, 2*D_NADH)
+NADpool := 3
+O2 := 0.024
+O2_n := 0.024
+p23 := 8
+p2 := 4
+p3 := p23-p2
+p_C1 := 8
+p_C3 := 4
+pH_mn := 7.4
+pH_o := 7
+pH_on := 7
+r_CV := 5
+Vol_mit := 0.067
+Z := 59.028
+
+p_tot := p_totNADH
+E_1 := E1NADH
+E_1n := E1NADH_n
+k10 := k1_n*NADH/NADHn
+
+# clustering tags - these identify symbols that belong within different submodels
+# and can be used to cluster these together when graphing dependencies
+
+## + Metabolism
+## @ a H bred O2 Dpsi p1 p2 p3 f1 f2 f3 L C_im R_Hi ared b Vol_mit cytox_tot_tis cytox_tot NADNADHrat C_NADH
+## + Metabolism
+## @ L_lk k1 kn1 k2 kn2 Keq1 Keq2 pH_m Dp c3 k3 k30 Dp_30 Dp3_corr p_tot p23 L_CV theta r_buffi C_0i dpH
+## + Metabolism
+## @ CVinh L_lk0 k_lk2 k_unc C_buffi L_CVn L_CVmax k2_n ck2 L_CV0 r_CV E_2 ck1 k10 kCV E_1 pH_o Dp_n Z
+## + Metabolism
+## @ Dp_CV0 E_N0 L_lkfrac E_c0 p_C1 NADpool p_C3 f_n pH_on DpH_n pH_mn Dpsi_n NADH NADHn p_totNADH L_CVfrac
+## + Metabolism
+## @ L_n L_lkn E1NADH E_a30 Keq2_n C_NADH_n E1NADH_n Keq1_n O2_n H_n a_n b_n ared_n bred_n a_frac_n
+## + Metabolism
+## @ NADNADHratn E_1n k1_n D_NADH
+
+# externals:
+# bsrf_link: CMRO2_n J_O2 u
+
+# documentation
+@import doc_met_shared doc_met_M_shared doc_met_BS
+
+

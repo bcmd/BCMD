@@ -1,0 +1,122 @@
+# shared model doc comments for the BSRF state variables
+
+## Concentration of oxidised cytochrome c oxidase.
+## $Cu_{A,o}$
+## ~ mM
+## @ a
+
+## Concentration of reduced cytochrome a$_3$.
+## $a_{3,r}$
+## ~ mM
+## @ bred
+
+## Mitochondrial inner membrane potential.
+## $\psi$
+## ~ mV
+## Varies as charge (in the form of protons) is transferred across the membrane capacitance.
+## @ Dpsi
+
+## Mitochondrial proton concentration.
+## $H^+$
+## ~ mM
+## @ H
+
+## Mitochondrial oxygen concentration.
+## $O_2$
+## ~ mM
+## @ O2
+
+## Capillary oxygen concentration.
+## $O_{2,c}$
+## ~ mM
+## @ O2c
+
+## Typical blood vessel radius.
+## ~ cm
+## @ r
+
+## Filtered carbon dioxide partial pressure.
+## $\nu_{CO_2}$
+## ~ mmHg
+## @ v_c
+
+## Filtered capillary oxygen concentration.
+## $\nu_{O_2}$
+## ~ mM
+## @ v_o
+
+## Filtered arterial blood pressure.
+## $\nu_{P_a}$
+## ~ mmHg
+## @ v_p
+
+## Filtered demand.
+## $\nu_{u}$
+## ~ dimensionless
+## @ v_u
+
+## Venous concentration of oxygen bound to haemoglobin.
+## $HbO_{2,v}$
+## ~ mM
+## @ XOv
+
+## Normal concentration of oxidised cytochrome c oxidase.
+## $Cu_{A,o,n}$
+## ~ mM
+## @ a_n
+
+## Normal concentration of reduced cytochrome a3.
+## $a_{3,r,n}$
+## ~ mM
+## @ bred_n
+
+## Normal mitochondrial inner membrane potential.
+## $\psi_n$
+## ~ mV
+## @ Dpsi_n
+
+## Normal mitochondrial proton concentration.
+## $H^+_n$
+## ~ mM
+## @ H_n
+
+## Normal mitochondrial oxygen concentration.
+## $O_{2,n}$
+## ~ mM
+## @ O2_n
+
+## Normal capillary oxygen concentration.
+## $O_{2,c,n}$
+## ~ mM
+## @ O2c_n
+
+## Normal blood vessel radius.
+## $r_n$
+## ~ cm
+## @ r_n
+
+## Normal filtered carbon dioxide partial pressure.
+## $\nu_{CO_2,n}$
+## ~ mmHg
+## @ v_cn
+
+## Normal filtered capillary oxygen concentration.
+## $\nu_{O_2,n}$
+## ~ mM
+## @ v_on
+
+## Normal filtered arterial blood pressure.
+## $\nu_{P_a,n}$
+## ~ mmHg
+## @ v_pn
+
+## Normal filtered demand.
+## $\nu_{u,n}$
+## ~ dimensionless
+## @ v_un
+
+## Normal venous concentration of oxygen bound to haemoglobin.
+## $HbO_{2,v,n}$
+## ~ mM
+## @ XOv_n
+

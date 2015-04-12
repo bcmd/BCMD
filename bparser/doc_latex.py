@@ -161,7 +161,7 @@ def latexName(name, model, insert=True):
     pieces = [x for x in stripped.split('_') if x]
     
     if not pieces:
-        result = '\mathbf{ERROR}'
+        result = '\\mathbf{ERROR}'
     elif len(pieces) == 1:
         result = pieces[0]
     else:
@@ -169,7 +169,7 @@ def latexName(name, model, insert=True):
     
     if insert:
         model['symbols'][name]['latex'] = result
-        
+    
     return result
 
 def printDiffs(file, model, config):
@@ -327,7 +327,13 @@ def printVar(name, file, model, config, omit_expr=False):
             texpr = '$%s%s$' % (display, noninit)
             print >> file, '%s & %s & %s & %s & %s \\\\' % (tsym, units, tinit, texpr, docs)
     else:
-        print >> file, '\\item[$%s$] (%s) $%s %s \\;$\\\\\nInitial value: $%s %s$\\\\\n%s' % (latexName(name, model), units, display, noninit, display, init, docs)
+        print >> file, '\\item[$%s$] $%s %s \\;$\\\\' % (latexName(name, model), display, noninit)
+        if config.get('latex-include-code', True):
+            print >> file, 'Implementation Name: \\texttt{%s}\\\\' % name.replace('_', '\\_')
+        print >> file, 'Units: %s\\\\' % units
+        print >> file, 'Initial value: $%s %s$\\\\' % (display, init)
+        print >> file, '%s' % docs
+
 
 def substitute(init, model, config):
     # init is an assigns entry, ie a dict with expr, depends, etc

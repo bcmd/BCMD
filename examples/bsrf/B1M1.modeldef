@@ -1,0 +1,16 @@
+## Combined BSRF model using blood flow variant B1 and metabolic variant M1.
+## @
+
+# portions shared with BrainSignals
+@import oxy link nirs
+
+# selected variants
+@import haemo_B1
+@import met_M met_M1
+
+# some additional outputs for development purposes
+@output f1 f2 f3 L R_Hi
+
+# documentation
+@import doc_roots
+

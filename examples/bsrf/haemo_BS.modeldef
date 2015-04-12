@@ -1,0 +1,103 @@
+# Full BrainSignals blood flow/autoregulation submodel framed as a BSRF component
+
+@input Pa_CO2
+@output Pa_CO2 r v_p v_u v_c v_o eta mu
+@extern O2c
+
+# blood flow & autoregulation
+# trivial linear model based on from h2_16 results
+# TODO: reintroduce k_aut
+r : 0 = T_e + T_m - (P_1 - P_ic) * r
+
+# diff eqs to filter autoreg stimuli
+v_p' = 1/t_p*(P_a - v_p)
+v_c' = 1/t_c*(Pa_CO2 - v_c)
+v_o' = 1/t_o*(O2c - v_o)
+v_u' = 1/t_u*(u - v_u)
+
+# intermediate variables
+eta = R_autp*(v_p/v_pn - 1)
+      + R_auto*(v_o/v_on - 1)
+      + R_autc*(1 - v_c/v_cn)
+      + R_autu*(1 - v_u/v_un)
+G = K_G * r^4
+
+h = -r + sqrt(r*r + 2*r_0*h_0 + h_0*h_0)
+mu = (mu_min + mu_max*exp(eta))/(1 + exp(eta))
+P_1 = (P_a+P_v)/2
+sigma_e = sigma_e0*(exp(K_sigma*(r-r_0)/r_0) - 1) - sigma_coll
+T_e = sigma_e*h
+T_m = T_max * exp(-pow(fabs((r-r_m)/(r_t-r_m)), n_m))
+T_max = T_max0*(1+k_aut*mu)
+
+
+# default/initial values
+h := h_n
+P_1 := P_1n
+
+Pa_CO2 := Pa_CO2n
+r := r_n
+v_p := v_pn
+v_c := v_cn
+v_o := v_on
+v_u := v_un
+
+# constraints
+r >= 0
+
+# parameters
+k_aut := 1
+h_0 := 0.003
+r_0 := 0.0126
+r_m := 0.027
+r_t := 0.018
+h_n := -r_n + sqrt(r_n*r_n + 2*r_0*h_0 + h_0*h_0)
+mu_max := 1
+mu_min := -1
+mu_n := 0
+n_m := 1.83
+P_1n := (P_an+P_vn)/2
+P_ic := 9.5
+P_icn := 9.5
+K_sigma := 10
+sigma_coll := 62.79
+sigma_e0 := 0.1425
+sigma_en := sigma_e0*(exp(K_sigma*(r_n-r_0)/r_0) - 1) - sigma_coll
+T_en := sigma_en*h_n
+T_max0 := T_maxn/(1+k_aut*mu_n)
+T_maxn := T_mn/exp(-pow(fabs((r_n-r_m)/(r_t-r_m)), n_m))
+T_mn := (P_1n-P_icn)*r_n - T_en
+
+
+Gn := CBFn/(P_an-P_vn)
+K_G := Gn/pow(r_n, 4)
+Pa_CO2n := 40
+R_autc := 2.2
+R_auto := 1.5
+R_autp := 4
+R_autu := 0.5
+r_n := 0.0187
+t_c := 5
+t_o := 20
+t_p := 5
+t_u := 0.5
+v_cn := Pa_CO2n
+v_on := O2c_n
+v_pn := P_an
+v_un := u_n
+
+# cluster tags for symbols belonging to this submodel
+## + Autoregulation
+## @ r eta v_p v_c v_o v_u t_c t_p t_o t_u v_on v_un v_pn v_cn r_n K_G G
+## + Autoregulation
+## @ R_auto R_autc R_autp R_autu Pa_CO2 Pa_CO2n Gn
+## + Autoregulation
+## @ h mu P_1 sigma_e T_e T_m T_max h_0 r_0 r_m r_t h_n mu_max mu_min mu_n P_ic n_m
+## + Autoregulation
+## @ P_1n K_sigma sigma_coll sigma_e0 sigma_en T_en T_max0 T_maxn T_mn P_icn k_aut
+
+# externals:
+# bsrf_link: P_an P_vn CBFn u u_n
+# bsrf_oxy: O2c O2c_n
+
+@import doc_haemo_shared doc_haemo_BS

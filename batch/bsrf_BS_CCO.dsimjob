@@ -1,0 +1,52 @@
+# in the absence of explicit other settings (TBD), various details are concocted from the model name
+# including program & workdir
+model: bsrf_BS
+
+# all distribs default to (constant, 0) if not given 
+
+# vars to be simulated, with distrib of initial conditions
+var: CCO, constant, 0
+
+# optional external file specifying param distributions
+# (explicit param lines can override this on an individual basis)
+param_file: ../examples/bsrf/bsrf_BS-pdists.csv
+
+# job mode specifies how multiple varying parameters are combined
+# should be one of: single, pairwise, cartesian or (TODO) morris
+# default is single
+# (cartesian should only be used with small numbers of params!)
+job_mode: morris
+
+# param_select specifies which params to vary
+# may specify an explicit (comma-separated) list
+# or * to mean all params for which a distrib has been provided (the default)
+param_select: *
+
+# inputs, with perturbation distribs
+# (latter ignored unless the --perturb command-line switch is given)
+input: SaO2sup, normal, 0, 0.00001
+input: P_a, normal, 0, 3
+input: Pa_CO2, normal, 0, 8
+
+# use an alias for t to specify the t variable, if not using the default ' t'
+# in particular, you might need to alias t to itself
+# if explicitly including it by that name in a CSV
+alias: t, t
+
+# the number of distinct levels (potentially) tested per parameter
+divisions: 10
+
+# periodically save intermediate results after this many jobs (default 100)
+# set to 0 for no intermediate saves
+#save_interval: 0
+
+# the number of paths to run (only relevant for Morris sampling)
+npath: 20
+
+# where to start each trajectory:
+# random = a completely random point in the search sequence
+# default = start at default value for params (or nearest point on search grid)
+path_start: random
+
+# number of sims to run in parallel
+nbatch: 8

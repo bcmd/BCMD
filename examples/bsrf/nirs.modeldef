@@ -1,0 +1,59 @@
+# BrainSignals NIRS observation submodel framed as a BSRF component
+
+# note: this part of the model has no effect on model behaviour
+# it serves purely to define additional output variables representing measurements
+# however, its external dependencies impose requirements on the models it can link to
+
+@output CMRO2 Vmca TOI HHb HbO2 HbT CCO
+
+# all of the active variables here come from somewhere else
+@extern f3 CBF a r XOa XOv
+
+# there are actually several distinct measurement models here, which we'll
+# organise separately in the hope of improving comprehensibility
+
+# rate of metabolism is purely a scaled version of a metabolic reaction rate
+## + NIRS_metabolism
+CMRO2 = f3 * Vol_mit
+
+# Vmca is a scaled version of the blood flow
+## + NIRS_blood
+## @ Vmca CBFscale
+Vmca = CBF * CBFscale
+CBFscale := 5000
+
+# (𝚫ox)CCO is a scaled and offset version of metabolic variable 'a'
+## + NIRS_cco
+## @ CCO CCO_offset
+CCO = CCO_offset + 1000 * Vol_mit * (a-a_n)
+CCO_offset := 0
+
+# NIRS oxygenation outputs all depend on volume changes and saturation
+# we assume that only arterial volume varies, and does so in line
+# with the vessel radius (ie, area) change
+Vol_art = Vol_artn * (r/r_n)^2
+
+HbO2 = (Vol_art * XOa + Vol_ven * XOv) * blood_hb
+HbT = (Vol_art + Vol_ven) * Xtot * blood_hb
+HHb = HbT - HbO2
+
+TOI = 100 * HbO2 / HbT
+
+# params
+blood_hb := 0.04 * 1000 / 4    # fraction of brain volume that is blood * (mM->uM) / binding sites
+VArat_n := 3
+Vol_artn := 1/(1 + VArat_n)
+Vol_ven := VArat_n / (1 + VArat_n)
+
+## + NIRS
+## @ Vol_art HbO2 HbT HHb TOI
+## + NIRS
+## @ blood_hb VArat_n Vol_artn Vol_ven
+
+# externals:
+# bsrf_met: f3 Vol_mit a a_n
+# bsrf_oxy: CBF XOa XOv Xtot
+# bsrf_blood: r r_n
+
+@import doc_nirs
+

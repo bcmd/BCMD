@@ -1,0 +1,111 @@
+# least-simplified of our linear rates models
+f1 = f1_0 + f1_u * log(u) + f1_Dp * Dp + f1_a * log(a)
+f2 = f2_0 + f2_Dp * log(Dp) + f2_a * log(a) + f2_bred * log(bred)
+f3 = f3_0 + f3_Dp * log(Dp) + f3_O2 * log(O2) + f3_bred * log(bred)
+L = L_0 + L_th * theta + L_Dp * Dp
+
+# Call:
+# lm(formula = f1 ~ log(u) + Dp + log(a), data = M1x)
+#
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -1.348e-03 -4.448e-05 -1.585e-05  4.564e-05  1.586e-03 
+#
+# Coefficients:
+#              Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) 1.221e-01  3.914e-03   31.18   <2e-16 ***
+# log(u)      1.087e-01  1.113e-04  976.57   <2e-16 ***
+# Dp          5.270e-03  1.506e-05  350.01   <2e-16 ***
+# log(a)      1.848e-01  5.092e-04  362.86   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.0001278 on 10457 degrees of freedom
+# Multiple R-squared:      1,	Adjusted R-squared:      1 
+# F-statistic: 7.031e+07 on 3 and 10457 DF,  p-value: < 2.2e-16
+
+f1_0 := 1.221e-01
+f1_u := 1.087e-01
+f1_Dp := 5.270e-03
+f1_a := 1.848e-01
+
+# Call:
+# lm(formula = f2 ~ Dp + log(a) + log(bred), data = M1x)
+#
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -0.0149589 -0.0002794 -0.0000964  0.0003008  0.0091762 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  5.432e+00  1.401e-02   387.8   <2e-16 ***
+# Dp          -6.935e-03  2.412e-05  -287.5   <2e-16 ***
+# log(a)       1.173e+00  4.616e-03   254.1   <2e-16 ***
+# log(bred)    8.545e-02  7.955e-04   107.4   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.0008726 on 10457 degrees of freedom
+# Multiple R-squared:  0.9977,	Adjusted R-squared:  0.9977 
+# F-statistic: 1.507e+06 on 3 and 10457 DF,  p-value: < 2.2e-16
+
+f2_0 := 5.432e+00
+f2_Dp := -6.935e-03
+f2_a := 1.173e+00
+f2_bred := 8.545e-02
+
+# Call:
+# lm(formula = f3 ~ Dp + log(O2) + log(bred), data = M1x)
+#
+# Residuals:
+#        Min         1Q     Median         3Q        Max 
+# -0.0018252 -0.0000565  0.0000277  0.0000659  0.0039633 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept)  1.169e+01  9.125e-03  1281.4   <2e-16 ***
+# Dp          -4.345e-02  2.866e-05 -1515.9   <2e-16 ***
+# log(O2)      3.923e-01  3.649e-04  1075.2   <2e-16 ***
+# log(bred)    3.649e-01  4.476e-04   815.4   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.000222 on 10457 degrees of freedom
+# Multiple R-squared:  0.9999,	Adjusted R-squared:  0.9999 
+# F-statistic: 2.334e+07 on 3 and 10457 DF,  p-value: < 2.2e-16
+
+f3_0 := 1.169e+01
+f3_Dp := -4.345e-02
+f3_O2 := 3.923e-01
+f3_bred := 3.649e-01
+
+# Call:
+# lm(formula = L ~ theta + Dp, data = M1x)
+#
+# Residuals:
+#       Min        1Q    Median        3Q       Max 
+# -0.003635 -0.001750 -0.001522 -0.000875  0.233762 
+#
+# Coefficients:
+#               Estimate Std. Error t value Pr(>|t|)    
+# (Intercept) -15.339464   0.025515  -601.2   <2e-16 ***
+# theta         5.665904   0.001886  3005.0   <2e-16 ***
+# Dp            0.097097   0.000137   708.9   <2e-16 ***
+# ---
+# Signif. codes:  0 ‘***’ 0.001 ‘**’ 0.01 ‘*’ 0.05 ‘.’ 0.1 ‘ ’ 1
+#
+# Residual standard error: 0.009237 on 10458 degrees of freedom
+# Multiple R-squared:  0.9994,	Adjusted R-squared:  0.9994 
+# F-statistic: 8.068e+06 on 2 and 10458 DF,  p-value: < 2.2e-16
+
+L_0 := -15.339464
+L_th := 5.665904
+L_Dp := 0.097097
+
+
+## + Metabolism
+## @ f1_0 f1_u f1_Dp f1_a f2_0 f2_Dp f2_a f2_bred
+## + Metabolism
+## @ f3_0 f3_Dp f3_O2 f3_bred L_0 L_th L_Dp
+
+@import doc_met_M0

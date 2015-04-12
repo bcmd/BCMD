@@ -1,0 +1,70 @@
+# exoskeleton of the metabolic submodel of BSRF
+# the rate constant terms are hived off into their own file
+
+# no direct inputs (at the moment), just refs to other submodels
+@output Dpsi H O2 a bred
+@extern J_O2
+@extern f1 f2 f3 L
+
+# metabolic reactions
+# note that compartment volumes have been divided into the stoichiometry
+4 [a] + p1/R_Hi [H] -> {f1}
+p2/R_Hi [H] -> 4 [a] + 4 [bred] {f2}
+[O2] + 4 [bred] + p3/R_Hi [H] -> {f3}
+-> 1/R_Hi [H] {L}
+-> 1/Vol_mit [O2] {J_O2}
+
+Dpsi' = (p2*f2+p1*f1+p3*f3-L)/C_im
+
+# intermediate  variables
+Dp = Dpsi - Z * (4 + log10(H))
+theta = kCV * (Dp + Z * log10(u) - 90)
+
+# proton buffering factor
+R_Hi = R_Hi_H / H
+
+# initial values of root variables are all their 'normal' values
+a := a_n
+bred := bred_n
+O2 := O2_n
+H := H_n
+Dpsi := Dpsi_n
+
+# parameters
+a_n := 0.06567
+bred_n := 0.001408
+O2_n := 0.024
+H_n := 3.981e-5
+Dpsi_n := 145
+
+Z := 59.028
+
+p1 := 12
+p2 := 4
+p3 := 4
+
+Vol_mit := 0.067
+C_im := 6.75e-3
+
+kCV := 0.02047339
+
+# this is a lumped value based on unvarying BrainSignals parameters
+# it is the same for all BSRF variants, since the relationship is exact
+# rather than being estimated by fitting an approximate model to sim data
+R_Hi_H := 9.565483
+
+# clustering tags - these identify symbols that belong within different submodels
+# and can be used to cluster these together when graphing dependencies
+
+## + Metabolism
+## @ a H bred O2 Dpsi p1 p2 p3 f1 f2 f3 L C_im R_Hi Vol_mit
+## + Metabolism
+## @ Dpsi_n O2_n H_n a_n bred_n Dp
+## + Metabolism
+## @ theta Z kCV R_Hi_H
+
+# externals:
+# bsrf_link: CMRO2_n J_O2 u
+
+@import doc_met_shared doc_met_M_shared doc_met_M
+

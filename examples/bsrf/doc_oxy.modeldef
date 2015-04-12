@@ -1,0 +1,71 @@
+# documentation comments for shared BS/BSRF oxygen transport submodel
+
+## Oxygen concentration at half-maximal saturation.
+## ~ mM
+## $\phi$
+## @ phi
+
+## Arterial concentration of oxygen bound to haemoglobin.
+## $HbO_{2,a}$
+## ~ mM
+## @ XOa
+
+## Cerebral blood flow.
+## $CBF$
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ s$^{-1}$
+## @ CBF
+
+## Hill coefficient for oxygen dissociation from haemoglobin.
+## ~ dimensionless
+## @ n_h
+
+## Normal arterial concentration of oxygen bound to haemoglobin.
+## $HbO_{2,a,n}$
+## ~ mM
+## @ XOa_n
+
+## Venous oxygen saturation.
+## $S_{v,O_2}
+## ~ dimensionless
+## @ SvO2
+
+## Normal venous oxygen saturation.
+## $S_{v,O_2,n}
+## ~ dimensionless
+## @ SvO2_n
+
+## Capillary oxygen saturation.
+## $S_{c,O_2}
+## ~ dimensionless
+## @ ScO2
+
+## Normal capillary oxygen saturation.
+## $S_{c,O_2,n}
+## ~ dimensionless
+## @ ScO2_n
+
+## Arterial oxygen saturation.
+## $S_{a,O_2}
+## ~ dimensionless
+## @ SaO2sup
+
+## Normal arterial oxygen saturation.
+## $S_{a,O_2,n}
+## ~ dimensionless
+## @ SaO2_n
+
+## Total concentration of haemoglobin O$_2$ binding sites in blood (4 times haemoglobin concentration).
+## $Hb_{tot}$
+## ~ mM
+## @ Xtot
+
+## Normal total concentration of haemoglobin O$_2$ binding sites in blood (4 times haemoglobin concentration).
+## $Hb_{tot,n}$
+## ~ mM
+## @ Xtot_n
+
+## Normal cerebral blood flow.
+## $CBF_n$
+## ~ ml$_{blood}$ ml$_{brain}^{-1}$ s$^{-1}$
+## @ CBFn
+
