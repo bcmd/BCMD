@@ -1,0 +1,406 @@
+# BCMD translation of the BRAINCIRC BrainSignals implementation
+
+# the following directive is not binding (ie, you can still assign to any symbols)
+# it just provides information regarding intent, which may be used by other tools (eg BGUI)
+@input P_a Pa_CO2 SaO2sup u
+
+# expand default outputs to include stuff we're interested in beyond the root vars
+@output P_a Pa_CO2 SaO2sup u
+@output XOv O2c r v_p v_u v_c v_o Dpsi
+@output H O2 a bred eta J_O2
+@output CCO Vmca CBF TOI DHbT DHbO2 DHHb CMRO2
+
+# and some internal values that are only really interesting for development purposes
+@output f1 f2 f3 L R_Hi
+
+# reactions
+# note that compartment volumes have been divided into the stoichiometry
+# in order to match BRAINCIRC's slightly eccentric notion of a compartment
+4 [a] + p1/R_Hi [H] -> {f1}           	     "a_red"
+p2/R_Hi [H] -> 4 [a] + 4 [bred] {f2}         "a_ox"
+[O2] + 4 [bred] + p3/R_Hi [H] -> {f3}        "b_ox"
+-> 1/R_Hi [H] {L}                            "psi_out"
+-> 1/Vol_mit [O2] {J_O2}                     "O2_in"
+
+# algebraic relations
+XOv : 0 = CBF*(XOa-XOv)-J_O2                 "XOvrel"
+O2c : 0 = phi*pow(ScO2/(1-ScO2), 1/n_h)-O2c  "O2crel"
+r : 0 = T_e + T_m - (P_1-P_ic)*r             "r_rel"
+
+# explicit differential equations
+v_p' = 1/t_p*(P_a - v_p)                     "v_prel"
+v_u' = 1/t_u*(u - v_u)                       "v_urel"
+v_c' = 1/t_c*(Pa_CO2 - v_c)                  "v_crel"
+v_o' = 1/t_o*(O2c - v_o)                     "v_orel"
+Dpsi' = (p2*f2+p1*f1+p3*f3-L)/C_im           "Dpsirel"
+
+# intermediate  variables
+G = K_G * r^4
+T_max = T_max0*(1+k_aut*mu)
+T_m = T_max * exp(-pow(fabs((r-r_m)/(r_t-r_m)), n_m))
+h = -r + sqrt(r*r + 2*r_0*h_0 + h_0*h_0)
+sigma_e = sigma_e0*(exp(K_sigma*(r-r_0)/r_0) - 1) - sigma_coll
+T_e = sigma_e*h
+CBF = G*(P_a-P_v)
+CBFnorm = CBF/CBFn
+eta = R_autp*(v_p/v_pn - 1)
+      + R_auto*(v_o/v_on - 1)
+      + R_autu*(1 - v_u/v_un)
+      + R_autc*(1 - v_c/v_cn)
+mu = (mu_min + mu_max*exp(eta))/(1 + exp(eta))
+DG1 = -4*(E_1+Z*log10(a/ared)) + p1*Dp
+Keq1 = 10^(-1/Z*(p1*Dp/4 - E_1))
+k1 = k10*exp(-ck1*(Dp-Dp_n))
+kn1 = k1/Keq1
+f1 = k1*a-kn1*ared
+DG2 = -4*(E_2+Z*(log10(ared)+log10(b)-log10(a)-log10(bred))) + p2*Dp
+Keq2 = 10^(-1.0/Z*(p2*Dp/4.0 - E_2))
+k2 = k2_n*exp(-ck2*(Dp-Dp_n))
+kn2 = k2/Keq2
+f2 = k2*ared*b-kn2*a*bred
+f3 = k3*O2*bred*exp(-c3*(Dp-Dp_30))/(1+exp(-c3*(Dp-Dp_30)))
+theta = kCV*(Dp + Z*log10(u) - Dp_CV0)
+L_CV = CVinh*L_CVmax*(1 - exp(-theta))/(1 + r_CV*exp(-theta))
+L_lk = k_unc*L_lk0*(exp(Dp*k_lk2)-1)
+L = L_CV + L_lk
+ared = cytox_tot - a
+b = cytox_tot - bred
+J_O2 = (1-JO2swtch)*JO2 + JO2swtch*JO2smth
+JO2 = fmin(D_O2*(O2c-O2), CBF*XOa)
+eps = CBFn*XOa_n/10
+JO2smth = CBF*XOa - (sqrt((D_O2*(O2c-O2)-CBF*XOa)^2 + eps^2)
+                     - D_O2*(O2c-O2) + CBF*XOa) / 2
+Xv = Xtot-XOv
+TOI = toif1 * toif2
+      + (100-toif1) * ( XOa * ((r/r_n)^2 /((r/r_n)^2 + Vol_ven/Vol_artn))
+                        + XOv * ((Vol_ven/Vol_artn)/( (r/r_n)^2 + Vol_ven/Vol_artn)) )
+                    / Xtot
+Dp = Dpsi + Z * (pH_m - pH_o)
+pH_m = -log10(H/1000)
+CCO = CCO_offset + 1000 * Vol_mit * (a-a_n)
+r_buffi = C_buffi/C_0i
+C_0i = (10^(-pH_m) - 10^(-pH_m-dpH)) / dpH
+R_Hi = r_buffi
+Vol_tot = Vol_art + Vol_ven
+Vol_art = Vol_artn * (r/r_n)^2
+AVR = Vol_art / Vol_ven
+CMRO2 = f3 * Vol_mit
+HbT = (Vol_art+Vol_ven) * Xtot/4 * blood_frac * 1000
+HHb = (Vol_art*Xa + Vol_ven*Xv)/4 * blood_frac * 1000
+HbO2 = (Vol_art*XOa + Vol_ven*XOv)/4 * blood_frac * 1000
+DHbT = DHbT_offset + HbT-HbTn
+DHHb = DHHb_offset + HHb-HHbn
+DHbO2 = DHbO2_offset + HbO2-HbO2n
+SvO2 = XOv/Xtot
+ScO2 = (SaO2sup + SvO2)/2
+Vmca = CBF*CBFscale
+DHbdiff = DHbdiff_offset + (DHbO2 - DHHb)
+
+# parameters with input dependencies
+# (a slightly arbitrary approach has been taken to these, omitting "normal" and "init"
+# values and things that depend only on those -- this should work for typical inputs,
+# though there may be some simulation conditions not accounted for)
+P_1 = (P_a+P_v)/2
+C_NADH = Z/2*log10(1/NADNADHrat)
+C_UQ = Z/2*log10(UQUQHrat)
+cytox_tot = cytox_tot_tis/Vol_mit
+Dp_30 = Dp_n + Dp3_corr
+E1NADH = (E_c0 - E_N0) + C_NADH
+E1succ = (E_c0 - E_U0)+C_UQ 
+E1TMPD = C_cytc
+H_o = 10^(3-pH_o)
+k1u = k1u_frac*u_n
+k3 = k30/(exp(-c3*(-Dp_30))/(1+exp(-c3*(-Dp_30))))
+kCV = -1/(Dp_n-Dp_CV0)*log((1-L_CV0)/(1+r_CV*L_CV0))
+L_CVfrac = 1 - L_lkfrac
+L_CVmax = L_CVn/L_CV0
+L_n = p_tot*f_n
+NADH = NADpool/(1+NADNADHrat)
+O2a = phi*pow(SaO2sup/(1-SaO2sup), 1/n_h)
+p1 = p_tot - p23
+PaO2 = O2a/henry_O2
+p_totNADH = p_C1 + p_C3 + p23
+p_totsucc = p_C3 + p23
+p_totTMPD = p23
+SaO2supp = SaO2sup*100
+supp = supp_n + supps*(Pa_CO2-Pa_CO2n)
+UQH2 = UQpool/(1+UQUQHrat)
+Vol_ven = Vol_venn+(Pa_CO2-Pa_CO2n)*Vva
+Xa = Xtot*(1-SaO2sup)
+XOa = Xtot*SaO2sup
+
+# initial values of root variables
+# this seems needlessly indirect, but corresponds to the BRAINCIRC version
+r := r_init
+a := a_init
+bred := bred_init
+O2 := O2_init
+XOv := XOv_init
+O2c := O2c_init
+H := H_init
+v_p := v_pn
+v_u := v_un
+v_c := v_cn
+v_o := v_on
+Dpsi := Dpsi_init
+
+# constraints (some additional ones will be automatically imposed for species in reactions)
+XOv >= 0
+O2c >= 0
+r >= 0
+
+# parameters
+a_frac_n := 0.8
+a_init := a_n
+a_n := cytox_tot*a_frac_n
+ared_n := cytox_tot - a_n
+b_frac_n := 1 - bred_n/cytox_tot
+b_init := b_n
+blood_frac := 0.04
+b_n := cytox_tot - bred_n
+bred_init := bred_n
+bred_n := f_n/k3/O2_n/(exp(-c3*(Dp_n-Dp_30))/(1+exp(-c3*(Dp_n-Dp_30))))
+c3 := 0.11
+CBFn := 0.0125
+CBFscale := 5000
+C_buffi := 0.022
+CCO_offset := 0
+C_cytc := -30
+C_cytc_n := -30
+C_im0 := 6.75e-3
+C_im := 6.75e-3
+ck1 := 0.01
+ck2 := 0.02
+CMRO2_n := 0.034
+C_NADH_n := Z/2*log10(1/NADNADHratn)
+C_UQ_n := Z/2*log10(UQUQHratn)
+CVinh := 1.0
+cytox_tot_tis := 0.0055
+DG1_n := -4*(E_1n+Z*log10(a_n/ared_n)) + p1*Dp_n
+DG2_n := -4*(E_2+Z*(log10(ared_n)+log10(b_n)-log10(a_n)-log10(bred_n))) + p2*Dp_n
+DHbdiff_offset := 0
+DHbO2_offset := 0
+DHbT_offset := 0
+DHHb_offset := 0
+D_NADH := 0.01
+D_O2 := J_O2n/(O2c_n-O2_n)
+Dp3_corr := -25
+Dp_CV0 := 90
+dpH := 0.001
+DpH_n := pH_mn - pH_on
+Dp_init := Dp_n
+Dp_n := Dpsi_n+Z*DpH_n
+Dpsi_init := Dpsi_n
+Dpsi_n := 145
+E1NADH_n := (E_c0 - E_N0) + C_NADH_n
+E1succ_n := (E_c0 - E_U0)+C_UQ_n
+E1TMPD_n := C_cytc_n
+E_2 := (E_a30 - E_c0)
+E_a30 := 350
+E_c0 := 247
+E_N0 := -320
+E_U0 := 60
+f_n := CMRO2_n/Vol_mit
+Gn := CBFn/(P_an-P_vn)
+h_0 := 0.003
+HbO2n := (Vol_artn*XOa + Vol_ven*XOv_n)/4 * blood_frac * 1000
+HbTn := (Vol_artn+Vol_ven)*Xtot_n/4 * blood_frac * 1000
+henry_O2 := 1.4e-3
+HHbn := (Vol_artn*Xa + Vol_ven*Xv_n)/4 * blood_frac * 1000
+H_init := H_n
+H_n := 10^(3-pH_mn)
+h_n := -r_n + sqrt(r_n*r_n + 2*r_0*h_0 + h_0*h_0)
+H_on := 10^(3-pH_on)
+J_O2n := CMRO2_n
+JO2swtch := 0
+k1_n := f_n/(a_n-1/Keq1_n*ared_n)
+k1u_frac := 0
+k2_n := f_n/(ared_n*b_n-1/Keq2_n*a_n*bred_n)
+k30 := 2.5e+5
+k_aut := 1
+Keq1_n := 10.0^(-1/Z*(p1*Dp_n/4 - E_1n))
+Keq2_n := 10.0^(-1/Z*(p2*Dp_n/4 - E_2))
+K_G := Gn/pow(r_n, 4)
+k_lk2 := 0.038
+kn1_n := f_n/(Keq1_n*a_n-ared_n)
+kn2_n := f_n/(Keq2_n*ared_n*b_n-a_n*bred_n)
+kNO := -5
+K_sigma := 10
+k_unc := 1
+L_CV0 := 0.4
+L_CVn := L_n*L_CVfrac
+L_lk0 := L_lkn/(exp(Dp_n*k_lk2)-1)
+L_lkfrac := 0.25
+L_lkn := L_n*L_lkfrac
+mu_max := 1
+mu_min := -1
+mu_n := 0
+NADHn := NADpool/(1+NADNADHratn)
+NADNADHratn := 9
+NADNADHrat := supp*NADNADHratn/pow(u, 2*D_NADH)
+NADpool := 3
+n_h := 2.5
+n_m := 1.83
+O2 := 0.024
+O2c_init := O2c_n
+O2c_n := phi*pow(ScO2_n/(1-ScO2_n), 1/n_h)
+O2_init := O2_n
+O2_n := 0.024
+O2n := O2_n
+O2v_n := phi*pow(XOv_n/(Xtot_n - XOv_n), 1/n_h)
+P_1n := (P_an+P_vn)/2
+p23 := 8
+p2 := 4
+p3 := p23-p2
+P_a := 100
+Pa_CO2 := 40
+Pa_CO2n := 40
+P_an := 100
+p_C1 := 8
+p_C3 := 4
+phi := 0.036
+pH_init := pH_mn
+pH_mn := 7.4
+pH_o := 7
+pH_on := 7
+P_ic := 9.5
+P_icn := 9.5
+P_v := 4
+P_vn := 4
+r_0 := 0.0126
+R_autc := 2.2
+R_auto := 1.5
+R_autp := 4
+R_autu := 0.5
+r_CV := 5
+r_init := r_n
+r_m := 0.027
+r_n := 0.0187
+r_t := 0.018
+SaO2_n := 0.96
+SaO2sup := 0.96
+ScO2_n := (SaO2_n + SvO2_n)/2
+sigma_coll := 62.79
+sigma_e0 := 0.1425
+sigma_en := sigma_e0*(exp(K_sigma*(r_n-r_0)/r_0) - 1) - sigma_coll
+suc_act	:= 1
+supp_n := 1
+supps := 0
+SvO2_n := XOv_n/Xtot_n
+swtch := 2
+t_c := 5
+T_en := sigma_en*h_n
+T_max0 := T_maxn/(1+k_aut*mu_n)
+T_maxn := T_mn/exp(-pow(fabs((r_n-r_m)/(r_t-r_m)), n_m))
+T_mn := (P_1n-P_icn)*r_n - T_en
+t_o := 20
+toif1 := 0
+toif2 := 75
+t_p := 5
+t_u := 0.5
+uf := 0
+u_n := 1
+u_psi := Dpsi_n/Dp_n
+UQH2n := UQpool/(1+UQUQHratn)
+UQpool := 1.35
+UQUQHrat := 1
+UQUQHratn := 1
+u := u_n + (Pa_CO2-Pa_CO2n)*uf
+VArat_n := 3
+v_cn := Pa_CO2n
+Vol_artn := Vol_totn/(1+VArat_n)
+Vol_mit := 0.067
+Vol_totn := 1
+Vol_venn := Vol_totn*(VArat_n/(1+VArat_n))
+v_on := O2c_n
+v_pn := P_an
+v_un := u_n
+Vva := 0
+Xa_n := Xtot_n*(1-SaO2_n)
+XOa_n := Xtot_n*SaO2_n
+XOv_init := XOv_n
+XOv_n := (CBFn*XOa_n-J_O2n)/CBFn
+Xtot := 9.1
+Xtot_n := 9.1
+Xv_n := Xtot_n-XOv_n
+Z := 59.028
+
+# initialisers conditional on the swtch parameter,
+# allowing different runtime configurations
+p_tot := (fabs(swtch) < 0.001)
+          ? p_totTMPD
+          : ( (fabs(swtch-1) < 0.001)
+              ? p_totsucc
+              : ( (fabs(swtch-2) < 0.001)
+                  ? p_totNADH
+                  : 0 ) )
+E_1 := (fabs(swtch) < 0.001)
+        ? E1TMPD
+        : ( (fabs(swtch-1) < 0.001)
+            ? E1succ
+            : ( (fabs(swtch-2) < 0.001)
+                ? E1NADH
+                : 0 ) )
+E_1n := (fabs(swtch) < 0.001)
+         ? E1TMPD_n
+         : ( (fabs(swtch-1) < 0.001)
+             ? E1succ_n
+             : ( (fabs(swtch-2) < 0.001)
+                 ? E1NADH_n
+                 : 0 ) )
+k10 := (fabs(swtch) < 0.001)
+        ? k1_n
+        : ( (fabs(swtch-1) < 0.001)
+            ? k1_n*UQH2/UQH2n
+            : ( (fabs(swtch-2) < 0.001)
+                ? k1_n*NADH/NADHn
+                : 0 ) )
+
+# clustering tags -- these have no effect on the model, but can be used by
+# the compiler when generating a dependency graph of the model
+
+## + Autoregulation
+## @ r eta v_p v_c v_o v_u t_c t_p t_o t_u v_on v_un v_pn v_cn r_n K_G G
+## + Autoregulation
+## @ R_auto R_autc R_autp R_autu Pa_CO2 Pa_CO2n Gn
+## + Autoregulation
+## @ h mu P_1 sigma_e T_e T_m T_max h_0 r_0 r_m r_t h_n mu_max mu_min mu_n P_ic n_m
+## + Autoregulation
+## @ P_1n K_sigma sigma_coll sigma_e0 sigma_en T_en T_max0 T_maxn T_mn P_icn k_aut
+
+## + Link
+## @ J_O2 P_a P_an P_v P_vn u u_n CMRO2_n D_O2 J_O2n
+
+## + Metabolism
+## @ a H bred O2 Dpsi p1 p2 p3 f1 f2 f3 L C_im R_Hi ared b Vol_mit cytox_tot_tis cytox_tot NADNADHrat C_NADH
+## + Metabolism
+## @ L_lk k1 kn1 k2 kn2 Keq1 Keq2 pH_m Dp c3 k3 k30 Dp_30 Dp3_corr p_tot p23 L_CV theta r_buffi C_0i dpH
+## + Metabolism
+## @ CVinh L_lk0 k_lk2 k_unc C_buffi L_CVn L_CVmax k2_n ck2 L_CV0 r_CV E_2 ck1 k10 kCV E_1 pH_o Dp_n Z
+## + Metabolism
+## @ Dp_CV0 E_N0 L_lkfrac E_c0 p_C1 NADpool p_C3 f_n pH_on DpH_n pH_mn Dpsi_n NADH NADHn p_totNADH L_CVfrac
+## + Metabolism
+## @ L_n L_lkn E1NADH E_a30 Keq2_n C_NADH_n E1NADH_n Keq1_n O2_n H_n a_n b_n ared_n bred_n a_frac_n
+## + Metabolism
+## @ NADNADHratn E_1n k1_n D_NADH
+
+## + NIRS
+## @ AVR CCO CMRO2 DHbdiff DHbO2 DHbT DHHb HbO2 HbT HHb TOI Vmca Vol_art Vol_tot Vol_ven Xa Xv
+## + NIRS
+## @ blood_frac CBFscale CCO_offset DHbdiff_offset DHbO2_offset DHbT_offset DHHb_offset
+## + NIRS
+## @ HbO2n HbTn HHbn toif1 toif2 VArat_n Vol_artn Vol_totn Vol_venn Vva Xv_n
+
+## + Oxygen
+## @ XOv O2c XOa CBF phi ScO2 n_h SvO2 Xtot SaO2sup P_v XOa_n XOv_n SvO2_n ScO2_n O2c_n SaO2_n Xtot_n CBFn
+
+# NB: the following are currently missing from the BSRF version
+## + Metabolism
+## @ DG1 DG2
+## + Link
+## @JO2 JO2smth
+## + Oxygen
+## @ CBFnorm
+
+
+

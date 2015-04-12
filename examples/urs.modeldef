@@ -1,0 +1,255 @@
+# BCMD translation of the Ursino-Lodi model, based on
+# the sources in braincirc 3.0 (built as model 'urs')
+
+# ----- PREAMBLE -----
+
+# not, obviously, a parameter, but something that BRAINCIRC
+# automatically #defines in a way that doesn't make sense
+# for BCMD, so we assign it internally instead
+PI := 3.1415926535
+
+# embedded function used in several relations below
+# this is probably a #define macro in BRAINCIRC builds
+# but we don't condone that sort antisocial behaviour here!
+[**
+/* Simple Heaviside step function + prototype for pedantry. */
+double heavi(double s);
+double heavi(double s)
+{
+    return (s < 0.0) ? 0.0 : 1.0;
+}
+**]
+
+# ----- BRAINCIRC TRANSLATION -----
+
+# differential equations
+
+P_ic' = k_E*P_ic*(2.0*G_1*(P_a-P_1)
+                  - 2.0*G_2*(P_2-P_c)
+                  + G_f*(P_c-P_ic) * heavi(P_c-P_ic)
+                  + G_pv*(P_c-P_v)
+                  - G_vs*(P_v-P_vs)
+                  - G_o*(P_ic-P_vs) * heavi(P_ic-P_vs)
+                  + I_i)                                       "P_ic_dyn"
+
+P_v' - P_ic' = 1.0/C_vi*(G_pv*(P_c-P_v) - G_vs*(P_v-P_vs))     "P_v_dyn"
+
+P_vs' = 1.0/C_ve*(G_vs*(P_v-P_vs)
+                  + G_o*(P_ic-P_vs)*heavi(P_ic-P_vs)
+                  - G_ve*(P_vs-P_cv))                          "P_vs_dyn"
+
+r_1' = (G_1*(P_a-P_1)
+        - G_1*G_2/(G_1+G_2)*(P_1-P_2))
+       /K_V1/r_1                                               "r_1_dyn"
+
+r_2' = (G_1*G_2/(G_1+G_2)*(P_1-P_2)
+        - G_2*(P_2-P_c))
+       /K_V2/r_2                                               "r_2_dyn"
+
+
+x_aut1' = 1.0/tau_aut1*(-x_aut1
+                        + G_aut1*(P_a-P_v-P_an+P_vn))          "x_aut1_dyn"
+
+x_aut2' = 1.0/tau_aut2*(-x_aut2 + G_aut2*(q-qn)/qn)            "x_aut2_dyn"
+
+x_co21' = 1.0/tau_co21*(-x_co21
+                        - G_co21*A_co2*log10(Pa_CO2/Pa_CO2n))  "x_co21_dyn"
+
+x_co22' = 1.0/tau_co22*(-x_co22
+                        - G_co22*A_co2*log10(Pa_CO2/Pa_CO2n))  "x_co22_dyn"
+
+
+# algebraics
+
+q : q = 2.0*G_2*(P_2-P_c)                                                                           "qrel"
+P_c : 0 = G_f*(P_c-P_ic)*heavi(P_c-P_ic) - 2.0*G_2*(P_2-P_c) + G_pv*(P_c-P_v)                       "P_crel"
+sigma_v1 : 0 = 2.0*(G_1*(P_a-P_1) - G_1*G_2/(G_1+G_2)*(P_1-P_2)) - 2.0*K_V1*r_1*r_01*sigma_v1/eta_1 "sigma_v1rel"
+sigma_v2 : 0 = 2.0*(G_1*G_2/(G_1+G_2)*(P_1-P_2) - G_2*(P_2-P_c)) - 2.0*K_V2*r_2*r_02*sigma_v2/eta_2 "sigma_v2rel"
+P_1 : 0 = T_e1 + T_m1 + T_v1 - P_1*r_1 + P_ic*(r_1+h_1)                                             "P_1rel"
+P_2 : 0 = T_e2 + T_m2 + T_v2 - P_2*r_2 + P_ic*(r_2+h_2)                                             "P_2rel"
+sigma_e1 : sigma_e1 = sigma_e01*(exp(K_sigma1*(r_1-r_01)/r_01) - 1.0) - sigma_coll1                 "sigma_e1rel"
+sigma_e2 : sigma_e2 = sigma_e02*(exp(K_sigma2*(r_2-r_02)/r_02) - 1.0) - sigma_coll2                 "sigma_e2rel"
+T_e1 : T_e1 = sigma_e1*h_1                                                                          "T_e1rel"
+T_e2 : T_e2 = sigma_e2*h_2                                                                          "T_e2rel"
+T_m1 : T_m1 = T_max1*exp(-pow(fabs((r_1-r_m1)/(r_t1-r_m1)), n_m1))                                  "T_m1rel"
+T_m2 : T_m2 = T_max2*exp(-pow(fabs((r_2-r_m2)/(r_t2-r_m2)), n_m2))                                  "T_m2rel"
+T_v1 : T_v1 = sigma_v1*h_1                                                                          "T_v1rel"
+T_v2 : T_v2 = sigma_v2*h_2                                                                          "T_v2rel"
+h_1 : h_1 = -r_1 + sqrt(r_1*r_1 + 2.0*r_01*h_01 + h_01*h_01)                                        "h_1rel"
+h_2 : h_2 = -r_2 + sqrt(r_2*r_2 + 2.0*r_02*h_02 + h_02*h_02)                                        "h_2rel"
+r_mca : r_mca = r_mcan*(1.0/K_mca*log((P_a-P_ic)/(P_an-P_icn))+1.0)                                 "r_mcarel"
+V_mca : V_mca = q/3.0*(1.0/(PI*r_mca*r_mca))                                                        "V_mcarel"
+T_max1 : T_max1 = T_max01*(1.0+k_aut1_urs*Mu_1)                                                     "T_max1rel"
+T_max2 : T_max2 = T_max02*(1.0+k_aut2_urs*Mu_2)                                                     "T_max2rel"
+A_co2 : A_co2 = 1.0/(1.0 + exp(-K_co2*(q - qn)/qn - b_co2))                                         "A_co2rel"
+Mu_1 : Mu_1 = (M_min1 + M_max1*exp((x_aut1 + x_co21)/K_M1))/(1.0 + exp((x_aut1 + x_co21)/K_M1))     "Mu_1rel"
+Mu_2 : Mu_2 = (M_min2 + M_max2*exp((x_aut2 + x_co22)/K_M2))/(1.0 + exp((x_aut2 + x_co22)/K_M2))     "Mu_2rel"
+
+
+# intermediate vars
+
+# (these were declared as temporaries)
+uTOI = (100.0*(1.0 - Vol_ven/(Vol_art + Vol_ven)*k_q/q))
+G_vs = (G1_vs*(P_v-P_ic)/(fmax(P_v-P_vs, 0.001)))
+C_vi = (1.0/(k_ven*(P_v-P_ic-P_vl)))
+G_1 = (K_G1*pow(r_1, 4))
+G_2 = (K_G2*pow(r_2, 4))
+V_1 = (K_V1*r_1*r_1)
+V_2 = (K_V2*r_2*r_2)
+Vol_art = (V_1 + V_2)
+Vol_ven = (Vol_ven00 + log(P_v-P_ic-P_vl)/k_ven)
+
+# constraints
+q >= 0
+
+# variable initialisations
+A_co2 := 0.6695
+h_1 := h_1n
+h_2 := h_2n
+P_1 := P_1n
+P_2 := P_2n
+P_c := P_cn
+P_ic := P_icn
+P_v := P_vn
+P_vs := P_vsn
+q := qn
+r_1 := r_1n
+r_2 := r_2n
+r_mca := r_mcan
+sigma_e1 := sigma_e1n
+sigma_e2 := sigma_e2n
+sigma_v1 := sigma_v1n
+sigma_v2 := sigma_v2n
+T_e1 := T_e1n
+T_e2 := T_e2n
+T_m1 := T_m1n
+T_m2 := T_m2n
+T_v1 := T_v1n
+T_v2 := T_v2n
+V_mca := V_mcan
+x_aut1 := 0.000685
+x_aut2 := 0.01449
+x_co21 := 0.0
+x_co22 := 0.0
+
+# parameter initialisations
+b_co2 := 0.65
+C_ve := 2.34
+Dens_Br := 1.04
+eta_1 := 232.0
+eta_2 := 47.8
+G1_vs := 2.77
+G_aut1 := 0.020
+G_aut2 := 5.2
+G_co21 := 1.3
+G_co22 := 15.5
+G_f := 0.00042
+G_o := 0.0019
+G_pv := 1.136
+G_ratn := 1.6196
+G_ve := 6.251
+h_01 := 0.003
+h_02 := 0.0025
+I_i := 0.0
+k_aut1_urs := 1.0
+k_aut2_urs := 1.0
+K_co2 := 20.0
+k_E := 0.11
+K_G1 := 1.43e+06
+K_G2 := 1.02e+08
+K_M1 := 0.5
+K_M2 := 0.5
+K_mca := 5.0
+K_sigma1 := 10.0
+K_sigma2 := 4.5
+K_V1 := 4640.0
+K_V2 := 1.543e+05
+k_ven := 0.31
+Mass_Br := 1300.0
+M_max1 := 1.0
+M_max2 := 1.0
+M_min1 := -1.0
+M_min2 := -1.0
+Mu_1n := 0.0
+Mu_2n := 0.0
+n_m1 := 1.83
+n_m2 := 1.75
+P_a := 100
+Pa_CO2 := 40.0
+Pa_CO2n := 40.0
+P_an := 100.0
+P_cv := 4.0
+P_cvn := 4.0
+P_vl := -2.5
+q_csfn := 0.006511
+qn := 12.5
+r_01 := 0.015
+r_02 := 0.0075
+r_m1 := 0.027
+r_m2 := 0.0128
+r_mcan := 0.15
+r_t1 := 0.018
+r_t2 := 0.0174
+sigma_coll1 := 62.79
+sigma_coll2 := 41.32
+sigma_e01 := 0.1425
+sigma_e02 := 11.19
+sigma_v1n := 0.0
+sigma_v2n := 0.0
+tau_aut1 := 10.0
+tau_aut2 := 20.0
+tau_co21 := 20.0
+tau_co22 := 20.0
+T_max01 := 2.16
+T_max02 := 1.5
+T_v1n := 0.0
+T_v2n := 0.0
+Vol_blood_frac := 0.0475
+Vol_BrW_frac := 0.8
+Vol_c_frac := 0.13
+
+Vol_Br := Mass_Br/Dens_Br
+
+
+# variable init functions
+
+Mu_1 := Mu_1n
+Mu_2 := Mu_2n
+T_max1 := T_max1n
+T_max2 := T_max2n
+
+# parameter init functions
+
+G_1n := G_2n*G_ratn
+G_2n := qn*(1.0 + G_ratn)/G_ratn/(P_an - P_cn)
+h_1n := -r_1n + sqrt(r_1n*r_1n + 2.0*r_01*h_01 + h_01*h_01)
+h_2n := -r_2n + sqrt(r_2n*r_2n + 2.0*r_02*h_02 + h_02*h_02)
+P_1n := P_an - qn/2.0/G_1n
+P_2n := P_cn + qn/2.0/G_2n
+P_cn := q_csfn/G_f + P_icn
+P_icn := q_csfn/G_o + P_vsn
+P_vn := (qn - q_csfn)/G1_vs + P_icn
+P_vsn := qn/G_ve + P_cvn
+r_1n := pow(G_1n/K_G1, 0.25)
+r_2n := pow(G_2n/K_G2, 0.25)
+sigma_e1n := sigma_e01*(exp(K_sigma1*(r_1n-r_01)/r_01) - 1.0) - sigma_coll1
+sigma_e2n := sigma_e02*(exp(K_sigma2*(r_2n-r_02)/r_02) - 1.0) - sigma_coll2
+T_e1n := sigma_e1n*h_1n
+T_e2n := sigma_e2n*h_2n
+T_m1n := T_max1n*exp(-pow(fabs((r_1n-r_m1)/(r_t1-r_m1)), n_m1))
+T_m2n := T_max2n*exp(-pow(fabs((r_2n-r_m2)/(r_t2-r_m2)), n_m2))
+T_max1n := T_max01
+T_max2n := T_max02
+V_1n := K_V1*r_1n*r_1n
+V_2n := K_V2*r_2n*r_2n
+V_mcan := qn/3.0*(1.0/(PI*r_mcan*r_mcan))
+Vol_artn := V_1n + V_2n
+Vol_bloodn := Vol_blood_frac*Vol_BrW
+Vol_BrW := Vol_BrW_frac*Vol_Br
+Vol_c := Vol_c_frac*Vol_bloodn
+Vol_ven00 := Vol_venn - log(P_vn-P_icn-P_vl)/k_ven
+Vol_venn := Vol_bloodn - Vol_c - Vol_artn
+
+# parameter constraint that was originally part of an init function
+Vol_ven00 >= 0
+

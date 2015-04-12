@@ -1,0 +1,26 @@
+# BCMD port of the two pool calcium BRAINCIRC example model
+
+# reactions
+[c_s] -> [c] {k_f * c_s}   "leak"
+[c] -> [c_s] {J_uptake}    "uptake"
+[c_s] -> [c] {J_release}   "release"
+[c] -> {k*c}               "extrusion"
+-> [c] {r}                 "IP3input"
+
+# intermediates
+J_uptake = V_1 * c^n / (K_1^n + c^n)
+J_release = (V_2 * c_s^m/(K_2^m + c_s^m)) * c^p/(K_3^p + c^p)
+
+# default initial values
+k_f := 1
+K_3 := 0.9
+k := 10
+p := 4
+r := 1
+V_1 := 65
+n := 2
+K_1 := 1
+V_2 := 500
+m := 2
+K_2 := 2
+

@@ -1,0 +1,25 @@
+# BCMD implementation of an HIV infection model
+# from Tharindi's summer project
+
+# differential equations
+x' = 2 * r * y - a * x - delta * x + theta
+y' = a * x - r * y - mu * y
+
+# intermediates
+delta = delta_0 * exp(sigma * x)
+mu = q * y
+a = a_0 * exp(-epsilon * x)
+
+# initial conditions
+x := 0.01
+y := 0.0001
+
+# parameters
+a_0 := 0.055
+epsilon := 1
+delta_0 := 0.02
+sigma := 0.01
+q := 15
+r := 2
+theta := 0.003
+

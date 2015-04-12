@@ -1,0 +1,15 @@
+# short voltage step sequence through the RC model
+# this simulation will be the target for a parameter optimisation task
+@6
+> 0
+!0
+: 2 R C
+= 0 0 987.65 0.01234
+!!!
+>>> *
+: 1 V
+= 0 2 5
++ 2 0
++ 8 15
++ 3 -8
++ 10 25

@@ -1,0 +1,23 @@
+# simple LRC circuit modelled using a state-space representation
+
+@output Ir Vc Il
+@input V
+
+# state equation
+Vc' = Il/C - Vc/(R * C)
+Il' = V/L - Vc/L
+
+# output equation
+# (this is generated more smoothly as an algebraic, though it would still work as an intermediate)
+Ir = Vc/R
+
+# initial values
+V := 0
+Vc := 0
+Il := 0
+Ir := 0
+
+# params
+R := 10
+C := 2
+L := 0.1

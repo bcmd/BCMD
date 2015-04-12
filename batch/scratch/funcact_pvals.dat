@@ -1,0 +1,172 @@
+//model parameters
+Z	59.028
+cytox_tot_tis	0.0055
+O2_n	0.024
+henry_O2	1.4000e-03
+a_frac_n	0.80
+//b_frac_n	0.986
+//b_frac_n	0.991
+//CMRO2_n	0.0395
+CMRO2_n	0.034
+u_n	1.0
+G0frac	0.2
+k_unc	1.0
+O2in	0.0
+kNO	-5.0
+
+CCO_offset	0.0
+
+JO2swtch	0.0
+
+O2	0.024
+kO2	0.24
+n_3	1.0
+kbred_frac	1000.0
+//kbred_frac_n	15.0
+
+Dp3_corr	-25.0
+c3	0.11
+
+Vol_mit	0.067
+
+
+L_lkfrac	0.25
+k_lk2	0.038
+//q_n	0.0125
+//q_n	0.01075
+
+P_a	100.0
+P_an	100.0
+hcrit	0.7
+phi	0.036
+n_h	2.5
+Xtot	9.1
+//Xtot	5.05
+Xtot_n	9.1
+
+SaO2supp	96.0
+SaO2sup	0.96
+SaO2_n	0.96
+VArat_n	3.0
+blood_frac	0.04
+p_C1	8.0
+
+pH_mn	7.4
+Dpsi_n	145
+//Dp_n	185
+pH_on	7.0
+pH_o	7.0
+Vol_totn	1.0
+
+Pa_CO2	40.0
+Pa_CO2n	40.0
+dpH	0.001
+C_buffi	0.022
+L_CV0	0.4
+Dp_CV0	90.0
+CVinh	1.0
+r_CV	5.0
+
+ck2	0.02
+//ck1	0.0
+// for isolated mitochondria
+ck1 0.01
+
+k30	2.5e+05
+
+// korz values
+E_N0	-320.0
+// values range from about 40.0 to 85.0
+E_U0	60.0
+//E_U0	85.0
+//C_NADH	-30.0
+//C_NADH_n	-30.0
+//C_UQ	0.0
+//C_UQ_n	0.0
+C_cytc	-30.0
+C_cytc_n	-30.0
+D_NADH	0.01
+// 230.0 elsewhere
+//E_c0	260.0
+E_c0	247.0
+//540.0 in Korz model
+E_a30	350.0
+swtch	2.0
+
+NADpool	3.0
+// eng gives a value of 1.27 (44 percent reduced) in myocytes, but values in brain seem to be higher
+//NADNADHratn	1.27
+NADNADHratn	9.0
+
+UQpool	1.35
+UQUQHratn	1.0
+//UQUQHrat	3.2
+UQUQHrat	1.0
+
+C_im	6.75e-3
+C_im0	6.75e-3
+
+
+suc_act	1.0
+// urs compartment
+
+P_ic	9.5
+P_icn	9.5
+P_v	4.0
+P_vn	4.0
+
+sigma_e0	0.1425
+K_sigma	10.0
+sigma_coll	62.79
+k_aut	1.0
+mu_min	-1.0
+mu_max	1.0
+mu_n	0.0
+//CBFn	0.0125
+CBFn	0.01075
+
+
+t_p	5.0
+t_o	20.0
+t_c	5.0
+t_u	0.5
+
+n_m	1.83
+r_n	0.0187
+h_0	0.003
+r_t	0.018
+
+CBFscale	5000
+DHbdiff_offset 0
+DHbT_offset 0
+DHHb_offset 0
+DHbO2_offset	0
+
+// play with these
+
+// R_autp	4.0
+u       1.0
+R_autp	4.0
+R_auto	1.5
+R_autu	0.5
+R_autc	2.2
+//r_m	0.029
+r_m	0.027
+//r_0	0.012
+r_0	0.0126
+//K_G	1.4300e+05
+
+
+//r_n 	1.0
+//r_t	0.9625
+//r_m	1.4706
+//r_0	0.6738
+//h_0	0.1604
+
+
+toif1   0.0
+toif2   75.0
+Vva     0.0
+uf      0.0
+supp_n  1.0
+supps   0.0

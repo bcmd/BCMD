@@ -1,0 +1,5 @@
+# generic trivial input that should work for any model
+# (running the model with no input specified should be equivalent to this)
+@ 1
+: 0
+= 0 1000

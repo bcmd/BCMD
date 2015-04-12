@@ -1,0 +1,11 @@
+# default input file for Ursino-Lodi 1998 model
+# based on the BRAINCIRC "_stepdown.dat" file
+@ 149
+>>> 6 t P_a P_ic V_mca x_aut1 sigma_v1
+: 1 P_a
+= 0 1000 100
+* 73 0.5 -1
++ 1200 26
+* 73 0.5 1
++ 40000 100
+

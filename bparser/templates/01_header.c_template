@@ -1,0 +1,109 @@
+/* Standard includes */
+#include <stdlib.h>
+#include <stddef.h>
+#include <math.h>
+#include <stdio.h>
+#include <assert.h>
+#include <string.h>
+
+/* GNU command line processing with long option support. This probably
+   ties us to GCC, but there you go. */
+#include <getopt.h>
+
+#include "radau5_interface.h"
+
+/* Internal data types */
+typedef struct Assign_struct
+{
+    int index;
+    double value;
+}
+Assign;
+
+typedef struct OutputSpec_struct
+{
+    int count;
+    int* fields;
+}
+OutputSpec;
+
+typedef struct Step_struct
+{
+    unsigned int param_count;
+    Assign* param_assigns;
+    
+    double startx;
+    double endx;
+    
+    /* stepwise output configuration */
+    RadauOut out;
+    OutputSpec* outSpec;
+    int outHeader;
+    
+    void (*resultFunction)(int, OutputSpec*, int);
+    OutputSpec* resultSpec;
+    int resultHeader;
+}
+Step;
+
+/* Non-customised constants and statics (for the moment, anyway) */
+const char* APP_VERSION = "bcmd v0.2a";
+const unsigned int IPAR_COUNT = 0;
+
+/* These are initialised by the RADAU5 interface functions */
+static double* RPAR = 0;
+static int* IPAR = 0;
+static double* Y = 0;
+
+/* These are initialised at runtime */
+static unsigned int STEP_COUNT = 0;
+static Step* STEPS = 0;
+
+/* Runtime configuration details */
+static char* inputName = 0;
+static FILE* inputFile = 0;
+static char* outputName = 0;
+static FILE* outputFile = 0;
+static char* detailName = 0;
+static FILE* detailFile = 0;
+static char* appName = 0;
+static int NAN_INIT = 0;
+
+/* These control whether calculated Y and intermediate values
+   are saved into the parameter array for future restoration.
+   At present we always do this, although it may be necessary
+   to make it configurable at some point. */
+static int SAVE_Y = 1;
+static int SAVE_INTERMEDIATES = 0;
+
+/* This controls whether intermediates are recalculated at output time.
+   May become optional later. */
+static int RECALC_INTERMEDIATES = 1;
+static int SAVE_RECALCED = 1;
+
+/* These control the times when the values from RPAR are copied
+   into the Y array. By default we do it before recalculating
+   dependent parameters (so that values set via the input will
+   be available to calculations), and also after a successful
+   solution (so that previous solutions become the start values
+   for the next step). Not currently configurable, but that
+   may be necessary in future. */
+enum CARRY_FLAGS
+{
+    CARRY_BEFORE = 1,
+    CARRY_BETWEEN = 1 << 1,
+    CARRY_AFTER = 1 << 2,
+    
+    CARRY_DEFAULT = CARRY_BEFORE | CARRY_AFTER
+};
+static int CARRY = CARRY_DEFAULT;
+
+/* Active output configuration for possible use by the prevailing RadauOut function. */
+static OutputSpec* outSpec = 0;
+static OutputSpec* customSpecs = 0;
+static int nextSpec = 0;
+const unsigned int SPEC_ALLOC_SIZE = 10;
+
+/* For the moment this is just a constant, may make definable later. */
+const double DEFAULT_DURATION = 1000.0;
+

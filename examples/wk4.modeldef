@@ -1,0 +1,20 @@
+# 4-element windkessel model for bloodflow
+
+# equations here are taken directly from the state space representation
+# in Kind et al 2010 (eqs 3 & 4)
+
+Fl' = (-Z * Fl / L) + (Z * Fa / L)
+Pp' = (-Pp / (R * C)) + Fa/C
+Pa : Pa = Pp - Z * Fl + Z * Fa
+
+# default initial values
+Fl := 0
+Fa := 0
+Pp := 0
+Pa := 0
+
+Z := 10
+R := 10
+C := 2
+L := 10
+

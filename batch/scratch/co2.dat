@@ -1,0 +1,6 @@
+chosen_param: Pa_CO2
+time_step: 20000.0
+step_vals: 2.0
+init_vals: 40.0
+min_val: 5.0
+max_val: 160.0

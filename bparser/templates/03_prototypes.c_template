@@ -1,0 +1,36 @@
+/* Prototypes for unchanging functions */
+int configure ( int argc, char** argv );
+void print_usage();
+void print_name();
+void print_version();
+void dump_symbols();
+int load_inputs();
+OutputSpec* create_output_spec(int outCount);
+int find_symbol( const char* symbol );
+int initialise();
+
+void out(int* nr, double* xold, double* x, double* y, double* cont,
+         int* lrc, int* n, double* rpar, int* ipar, int* irtrn);
+void out_none(int* nr, double* xold, double* x, double* y, double* cont,
+              int* lrc, int* n, double* rpar, int* ipar, int* irtrn);
+void out_header();
+
+void result(int err, OutputSpec* spec, int header);
+void result_header(OutputSpec* spec);
+
+int run();
+void finish();
+
+/* Prototypes for model functions
+   (the implementation is model specific, but the prototypes
+   are always the same) */
+void model_init();
+void param_update();
+void rhs(int* n, double* x, double* y, double* f, double* rpar, int* ipar);
+void constrain_params();
+void constrain_intermediates();
+void constrain_y(double* y);
+void save_y(double* y);
+void save_intermediates();
+void carry_forward();
+

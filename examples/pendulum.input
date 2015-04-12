@@ -1,0 +1,6 @@
+# simple input for pendulum model
+@ 5
+: 1 s
+= 0 10 1
+* 4 10 1
+

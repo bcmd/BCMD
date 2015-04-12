@@ -1,0 +1,19 @@
+# 3-element windkessel model for bloodflow
+# (again in electrical terms for now)
+
+@output Vc V I
+@input I
+
+# V is the overall voltage, Vc the voltage over the capacitance
+# I is the current
+# R1 is the resistance in series, R2 is the resistance in parallel
+Vc' = I/C - Vc/(R2 * C)
+V : V = Vc + R1 * I
+
+# default initial values
+V := 0
+Vc := 0
+I := 0
+R1 := 10
+R2 := 10
+C := 0.1

@@ -1,0 +1,31 @@
+# translation of the Hodgkin-Huxley model in BCMD format
+# (details are taken from the BRAINCIRC version)
+
+# the four differential equations
+v' = (-gK * pow(n, 4) * (v-vK) - gNa * pow(m, 3) * h * (v-vNa) - gL * (v-vL) + Iapp)/Cm
+m' = am * (1-m) - bm * m
+n' = an * (1-n) - bn * n
+h' = ah * (1-h) - bh * h
+
+# intermediate variables
+am = 0.1 * (25-v) / (exp((25-v)/10)-1)
+bm = 4 * exp(-v/18)
+ah = 0.07 * exp(-v/20)
+bh = 1/(1 + exp((30-v)/10))
+an = 0.01 * (10-v)/(exp((10-v)/10)-1)
+bn = 0.125 * exp(-v/80)
+
+# default initial values
+v := 0.804
+m := 0.0582
+n := 0.33
+h := 0.568
+gK := 36
+vK := -12
+gNa := 120
+vNa := 115
+gL := 0.3
+vL := 10.6
+Iapp := 1
+Cm := 1
+

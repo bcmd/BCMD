@@ -1,0 +1,6 @@
+# slightly more complex input file for the IP3 receptor model
+@ 71
+: 1 p
+= 0 100 0.10
+* 70 100 0.01
+

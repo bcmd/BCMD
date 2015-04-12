@@ -1,0 +1,12 @@
+# trivially simply test input for the BrainSignals model, simply increasing demand for a step
+@ 4
+: 1 u
+>>> 0
+!0
+= 0 100 1
+>>> *
+!!!
+= 0 100 1
+= 100 200 10
+= 200 300 1
+

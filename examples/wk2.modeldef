@@ -1,0 +1,16 @@
+# simplest 2-element windkessel model for bloodflow
+# (expressed for the moment in electrical terms)
+
+@output V I
+@input I
+
+# V is the voltage (ie, pressure)
+# I is the current (ie, flow rate)
+# R is the resistance of the vessels and C is the compliance
+V' = (I - V/R) / C
+
+# default initial values
+V := 0
+I := 0
+R := 10
+C := 0.1

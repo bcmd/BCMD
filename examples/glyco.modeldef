@@ -1,0 +1,19 @@
+# glycolytic oscillation model, translated from the BRAINCIRC version
+
+# differential equations
+s1' = nu - f
+s2' = alpha * f - eta * s2
+
+# intermediate variables
+u1 = s2^gam/(s2^gam * s1 + s2^gam + 1)
+f = s1 * u1
+u2 = f2
+
+# initial values
+s1 := 0.8
+s2 := 0.2
+nu := 0.0285
+alpha := 1
+eta := 0.1
+gam := 2
+

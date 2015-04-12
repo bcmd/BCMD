@@ -1,0 +1,9 @@
+# basic bloodflow input to simplified Kashif model
+@5
+: 1 q
+= 0 5 0
++ 5 1
++ 5 0
++ 5 1
++ 5 0
+

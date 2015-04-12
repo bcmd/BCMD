@@ -1,0 +1,22 @@
+# Kashif et al drastically-simplified version of the Ursino-Lodi model
+
+# The model is intended for use over short (intra-beat) timescales
+# it omits CSF pathways which are higher resistance and slower
+# and merges the arterial and proximal venous resistances into one 
+
+@output q Pa Pic
+
+# q is the input blood flow (ie, CBF, but see paper remarks)
+# Pa is the arterial pressure and Pic is the ICP
+# R is the merged arterial + proximal venous resistance
+# C is the arterial compliance
+
+Pa' = (q + (Pic - Pa)/R)/C
+Pic : Pic = fmax(0, R * q - Pa)
+
+# default initial values
+Pa := 0
+q := 0
+Pic := 0
+R := 10
+C := 1

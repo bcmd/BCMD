@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+	BCMD model definition language module for BBEdit/TextWrangler
+	Matthew Caldwell, Medical Physics, UCL <m.caldwell@ucl.ac.uk>
+-->
+<dict>
+	<key>BBEditDocumentType</key>
+	<string>CodelessLanguageModule</string>
+	<key>BBLMColorsSyntax</key>
+	<true/>
+	<key>BBLMIsCaseSensitive</key>
+	<true/>
+	<key>BBLMKeywordList</key>
+	<array>
+		<string>MM</string>
+		<string>MA</string>
+		<string>@import</string>
+		<string>@version</string>
+		<string>@input</string>
+		<string>@output</string>
+		<string>@extern</string>
+		<string>@independent</string>
+	</array>
+	<key>BBLMPredefinedNameList</key>
+	<array>
+		<string>acos</string>
+		<string>asin</string>
+		<string>atan</string>
+		<string>atan2</string>
+		<string>cos</string>
+		<string>cosh</string>
+		<string>sin</string>
+		<string>sinh</string>
+		<string>tan</string>
+		<string>tanh</string>
+		<string>exp</string>
+		<string>frexp</string>
+		<string>ldexp</string>
+		<string>log</string>
+		<string>log10</string>
+		<string>modf</string>
+		<string>pow</string>
+		<string>sqrt</string>
+		<string>ceil</string>
+		<string>fabs</string>
+		<string>floor</string>
+		<string>fmod</string>
+	</array>
+	<key>BBLMLanguageCode</key>
+	<string>Bmdl</string>
+	<key>BBLMLanguageDisplayName</key>
+	<string>BCMD Model Definition</string>
+	<key>BBLMScansFunctions</key>
+	<true/>
+	<key>BBLMSuffixMap</key>
+	<array>
+		<dict>
+			<key>BBLMLanguageSuffix</key>
+			<string>.modeldef</string>
+		</dict>
+	</array>
+	<key>Language Features</key>
+	<dict>
+		<key>Close Block Comments</key>
+		<string></string>
+		<key>Close Parameter Lists</key>
+		<string>)</string>
+		<key>Close Strings 1</key>
+		<string>&quot;</string>
+		<key>End-of-line Ends Strings 1</key>
+		<false/>
+		<key>Escape Char in Strings 1</key>
+		<string></string>
+		<key>Identifier and Keyword Characters</key>
+		<string>1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz@</string>
+		<key>Open Block Comments</key>
+		<string></string>
+		<key>Open Line Comments</key>
+		<string>#</string>
+		<key>Open Parameter Lists</key>
+		<string>(</string>
+		<key>Open Strings 1</key>
+		<string>&quot;</string>
+	</dict>
+	<key>BBLMCommentLineDefault</key>
+	<string>#</string>
+</dict>
+</plist>

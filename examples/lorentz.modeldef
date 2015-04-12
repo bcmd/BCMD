@@ -1,0 +1,17 @@
+# BCMD implementation of the Lorentz model
+# adapted from BRAINCIRC module "lorentz.dt"
+
+# differential equations
+xx' = sigma * (yy - xx)
+yy' = rho * xx - yy - xx * zz
+zz' = xx * yy - beta * zz
+
+# initial values
+xx := 1
+yy := 1
+zz := 1
+
+# parameters
+sigma := 10
+rho := 28
+beta := 2.6667

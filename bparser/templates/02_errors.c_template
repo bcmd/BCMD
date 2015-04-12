@@ -1,0 +1,69 @@
+/* standard error codes and message strings */
+enum
+{
+    ERR_OK               = 0,
+    
+    /* Exit for legitimate reasons (eg, print info from CL args) */
+    ERR_EXIT             = 1,
+    
+    ERR_UNKNOWN          = 2,
+    ERR_UNKNOWN_OPTION   = 3,
+    ERR_BAD_FILE         = 4,
+    ERR_INPUT_FAILED     = 5,
+    ERR_NO_STEPS         = 6,
+    ERR_BAD_INPUT_LINE   = 7,
+    ERR_INCOMPLETE       = 8,
+    ERR_BAD_NFIELDS      = 9,
+    ERR_ALLOC            = 10,
+    ERR_UNDEF_FIELDS     = 11,
+    ERR_TOKEN            = 12,
+    ERR_NAN_UNDEFINED    = 13,
+    ERR_BAD_REPS         = 14,
+    ERR_OUTSPEC_FAILURE  = 15,
+    
+    /* Error codes from RADAU5 may be negative, so we add an
+       offset here to make them legit array indices.
+       
+       NB: when adding new messages, ensure that ERR_LAST
+       gets updated to point to the end of our list. */
+    ERR_LAST             = 15,
+    
+    ERR_RADAU_OFFSET       = ERR_LAST + 5,
+    ERR_RADAU_SINGULAR     = ERR_RADAU_OFFSET - 4,
+    ERR_RADAU_STEPSIZE     = ERR_RADAU_OFFSET - 3,
+    ERR_RADAU_NMAX         = ERR_RADAU_OFFSET - 2,
+    ERR_RADAU_INCONSISTENT = ERR_RADAU_OFFSET - 1,
+    
+    ERR_RADAU_OK           = ERR_RADAU_OFFSET + 1,
+    ERR_RADAU_INTERRUPT    = ERR_RADAU_OFFSET + 2,
+};
+
+static char* ERROR_MESSAGES[] =
+{
+    "",
+    "",
+    "An unknown error occurred",
+    "Unknown command line option",
+    "Unable to open file",
+    "Input file empty or malformed",
+    "Bad step count specified in input file",
+    "Input file contains unrecognised line type",
+    "Input step sequence incomplete",
+    "Invalid field count in input",
+    "Memory allocation failure",
+    "Fields have not been specified for steps",
+    "Token not found in input line",
+    "NaN initialisation not available with current compiler configuration",
+    "Bad rep count in input",
+    "Error building output specification",
+    
+    /* Messages corresponding to codes returned from RADAU5. */
+    "RADAU5: matrix is repeatedly singular",
+    "RADAU5: step size becomes too small",
+    "RADAU5: larger NMAX is needed",
+    "RADAU5: input is not consistent",
+    "RADAU5: zero return code (unknown)",
+    "RADAU5: computation successful",
+    "RADAU5: computation interrupted"
+};
+

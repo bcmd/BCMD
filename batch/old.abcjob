@@ -1,0 +1,41 @@
+# in the absence of explicit other settings (TBD), various details are concocted from the model name
+# including program & workdir
+model: funcact
+
+# all distribs default to (constant, 0) if not given 
+
+# vars to be simulated, with distrib of initial conditions
+var: TOI, normal, 58.3, 0.2
+
+# params to be drawn, with prior
+param: Xtot, normal, 9.1, 8
+param: R_autc, uniform, -1, 10
+
+# inputs, with perturbation distribs
+input: SaO2sup, normal, 0, 0.00001
+input: P_a, normal, 0, 3
+input: Pa_CO2, normal, 0, 8
+
+# alias maps a var or param name to the corresponding header in the data file
+alias: TOI, TOI_d
+
+# use an alias for t to specify the t variable, if not using the default ' t'
+# in particular, you might need to alias t to itself
+# if explicitly including it by that name in a CSV
+#alias: t, t
+
+# number of particles to try
+particles: 1
+
+# number of repeat trials to run for each param draw -- since we perturb the inputs the trials are non-deterministic
+beta: 10
+
+# number of sims to run in parallel
+nbatch: 8
+
+# automatic epsilon schedule
+finalepsilon: 1.5
+alpha: 0.75
+
+# base sequence -- shared param initialisation, etc -- can include multiple files here, which will be run in order
+init: scratch/funcact_pvals.dat

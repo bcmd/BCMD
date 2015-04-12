@@ -1,0 +1,50 @@
+# BCMD translation of the IP3 receptor model from the BRAINCIRC version
+
+# reactions
+[S110] <-> [S010] {MA:kn1} {MA:k1p}    "reac1"
+[S010] <-> [S000] {MA:kn5} {MA:k5c}    "reac2"
+[S000] <-> [S100] {MA:k1p} {MA:kn1}    "reac3"
+[S100] <-> [S110] {MA:k5c} {MA:kn5}    "reac4"
+[S110] <-> [S111] {MA:k2c} {MA:kn2}    "reac5"
+[S111] <-> [S101] {MA:kn5} {MA:k5c}    "reac6"
+[S101] <-> [S001] {MA:kn3} {MA:k3p}    "reac7"
+[S001] <-> [S011] {MA:k5c} {MA:kn5}    "reac8"
+[S011] <-> [S111] {MA:k3p} {MA:kn3}    "reac9"
+[S010] <-> [S111] {MA:k4c} {MA:kn4}    "reac10"
+[S000] <-> [S001] {MA:k4c} {MA:kn4}    "reac11"
+[S100] <-> [S101] {MA:k2c} {MA:kn2}    "reac12"
+
+# diff equations
+c' = (r1 * S110^3 + r2) * (cs - c) - r3 * c * c / (c * c + kp * kp)
+
+# intermediates
+k5c = k5 * c
+k2c = k2 * c
+k4c = k4 * c
+cs = (cavg - c)/vc
+open_frac = S110^3
+k1p = k1 * p
+k3p = k3 * p
+lc = log(c/1000000)
+
+# default initial values (skipping things inited to 0)
+S110 := 1
+c := 1
+kn1 := 52
+kn5 := 1.64
+kn2 := 0.21
+kn3 := 377.2
+kn4 := 0.029
+r1 := 1.11
+vc := 0.185
+r2 := 0.02
+cavg := 2
+r3 := 0.9
+kp := 0.1
+k5 := 20
+k2 := 0.2
+k4 := 0.2
+p := 0.5
+k1 := 400
+k3 := 400
+

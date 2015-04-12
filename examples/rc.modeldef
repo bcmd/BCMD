@@ -1,0 +1,17 @@
+# super-simple model of a series RC circuit
+
+@output Vc V
+@input V
+
+# root variable Vc is the voltage across the capacitor
+# input V is the voltage across the circuit
+Vc' = (V - Vc) / (R * C)
+
+# initial values
+V := 0
+Vc := 0
+
+# parameters
+R := 10
+C := 0.1
+

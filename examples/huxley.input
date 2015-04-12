@@ -1,0 +1,5 @@
+# simple step input for the Hodgkin-Huxley model
+@ 2
+: 1 Iapp
+= 0 1 50
+= 1 20 0

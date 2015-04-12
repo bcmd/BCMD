@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+	BCMD input file language module for BBEdit
+	Matthew Caldwell, Medical Physics, UCL <m.caldwell@ucl.ac.uk>
+-->
+<dict>
+	<key>BBEditDocumentType</key>
+	<string>CodelessLanguageModule</string>
+	<key>BBLMColorsSyntax</key>
+	<true/>
+	<key>BBLMIsCaseSensitive</key>
+	<true/>
+	<key>BBLMKeywordList</key>
+	<array>
+		<string>@</string>
+		<string>!</string>
+		<string>!!</string>
+		<string>!!!</string>
+		<string>!0</string>
+		<string>&gt;</string>
+		<string>&gt;&gt;</string>
+		<string>&gt;&gt;&gt;</string>
+		<string>:</string>
+		<string>=</string>
+		<string>*</string>
+		<string>+</string>
+	</array>
+	<key>BBLMPredefinedNameList</key>
+	<array></array>
+	<key>BBLMLanguageCode</key>
+	<string>Bmin</string>
+	<key>BBLMLanguageDisplayName</key>
+	<string>BCMD Input File</string>
+	<key>BBLMScansFunctions</key>
+	<false/>
+	<key>BBLMSuffixMap</key>
+	<array>
+		<dict>
+			<key>BBLMLanguageSuffix</key>
+			<string>.input</string>
+		</dict>
+	</array>
+	<key>Language Features</key>
+	<dict>
+		<key>Identifier and Keyword Characters</key>
+		<string>1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz@!:=+*&gt;</string>
+		<key>Open Line Comments</key>
+		<string>#</string>
+	</dict>
+	<key>BBLMCommentLineDefault</key>
+	<string>#</string>
+</dict>
+</plist>

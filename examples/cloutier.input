@@ -1,0 +1,7 @@
+# Default input for Cloutier model
+# Note that the model definition includes a time-dependent stimulus function
+# so an external input is not applied here, we just run for many steps
+@ 2500
+: 0
+= 0 1
+* 2499 1

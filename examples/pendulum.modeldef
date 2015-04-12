@@ -1,0 +1,23 @@
+# transcription of pendulum DAE-index 1 example from APMonitor
+
+# differential equations
+x' = v
+y' = w
+v' = (-2 * x * lam)/m
+w' = -g - (2 * y * lam)/m
+
+# algebraic relation
+lam : 0 = m * (v^2 + w^2 - g*y) - 2 * lam * (x^2 + y^2)
+
+# parameters
+m := 1
+g := 9.81
+s := 1
+
+# initial values
+x := 0
+v := 1
+w := 0
+y = -s
+lam = m * (1+s*g) / 2*s^2
+

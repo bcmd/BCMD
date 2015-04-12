@@ -1,0 +1,63 @@
+body
+{
+	font-family: verdana, helvetica, arial, san-serif;
+	margin: 10px;
+	text-align: left;
+	background-color: #eee;
+}
+
+td
+{
+    padding: 3px;
+    padding-right: 16px;
+}
+
+div
+{
+    background-color: #fff;
+    padding: 5px;
+}
+
+.footer
+{
+    background-color: #eee;
+}
+
+.tabular
+{
+    background-color: #fff;
+}
+
+h2
+{
+    background-color: #fff;
+}
+
+.label
+{
+    color: #060;
+}
+
+.symbol h4
+{
+    color: #800;
+    margin-top: 10px;
+    margin-bottom: 10px;
+}
+
+.symbol
+{
+    padding-bottom:10px;
+}
+
+.description
+{
+    max-width: 512px;
+    font-style: italic;
+    padding-bottom: 10px;
+}
+
+.overview p
+{
+    max-width: 640px;
+}

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<!--
+	BCMD Simulation job specification
+	Matthew Caldwell, Medical Physics, UCL <m.caldwell@ucl.ac.uk>
+-->
+<dict>
+	<key>BBEditDocumentType</key>
+	<string>CodelessLanguageModule</string>
+	<key>BBLMColorsSyntax</key>
+	<true/>
+	<key>BBLMIsCaseSensitive</key>
+	<true/>
+	<key>BBLMKeywordList</key>
+	<array>
+		<string>model</string>
+		<string>var</string>
+		<string>param</string>
+		<string>input</string>
+		<string>alias</string>
+		<string>particles</string>
+		<string>beta</string>
+		<string>nbatch</string>
+		<string>finalepsilon</string>
+		<string>alpha</string>
+		<string>init</string>
+		<string>param_file</string>
+		<string>job_mode</string>
+		<string>param_select</string>
+		<string>divisions</string>
+		<string>npath</string>
+		<string>path_start</string>
+		<string>save_interval</string>
+		<string>program</string>
+		<string>model_io</string>
+		<string>timeout</string>
+		<string>solver</string>
+		<string>distance</string>
+		<string>max_iter</string>
+		<string>steady</string>
+		<string>weight</string>
+	</array>
+	<key>BBLMPredefinedNameList</key>
+	<array>
+		<string>normal</string>
+		<string>uniform</string>
+		<string>constant</string>
+		<string>lognormal</string>
+		<string>single</string>
+		<string>morris</string>
+		<string>pairwise</string>
+		<string>cartesian</string>
+		<string>default</string>
+		<string>random</string>
+		<string>GLP</string>
+		<string>NLP</string>
+		<string>NSP</string>
+		<string>pswarm</string>
+		<string>de</string>
+		<string>galileo</string>
+		<string>ralg</string>
+		<string>euclidean</string>
+		<string>manhattan</string>
+		<string>cosine</string>
+		<string>loglik</string>
+		<string>mean</string>
+		<string>angular</string>
+	</array>
+	<key>BBLMLanguageCode</key>
+	<string>Bjob</string>
+	<key>BBLMLanguageDisplayName</key>
+	<string>BCMD Simulation Job</string>
+	<key>BBLMScansFunctions</key>
+	<true/>
+	<key>BBLMSuffixMap</key>
+	<array>
+		<dict>
+			<key>BBLMLanguageSuffix</key>
+			<string>.abcjob</string>
+		</dict>
+		<dict>
+			<key>BBLMLanguageSuffix</key>
+			<string>.dsimjob</string>
+		</dict>
+		<dict>
+			<key>BBLMLanguageSuffix</key>
+			<string>.mcjob</string>
+		</dict>
+		<dict>
+			<key>BBLMLanguageSuffix</key>
+			<string>.optjob</string>
+		</dict>
+	</array>
+	<key>BBLMPreferredFilenameExtension</key>
+	<string>dsimjob</string>	
+	<key>Language Features</key>
+	<dict>
+		<key>Identifier and Keyword Characters</key>
+		<string>1234567890ABCDEFGHIJKLMNOPQRSTUVWXYZ_abcdefghijklmnopqrstuvwxyz</string>
+		<key>Open Line Comments</key>
+		<string>#</string>
+	</dict>
+	<key>BBLMCommentLineDefault</key>
+	<string>#</string>
+</dict>
+</plist>

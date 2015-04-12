@@ -1,0 +1,63 @@
+# basic optimisation job for testing and demonstration purposes
+# we use a simple RC-circuit model, and data simulated from the model itself
+# (simulation input file: examples/rc_target.input)
+model: rc
+
+# we wish to simulate the capacitor voltage and use it to estimate the capacitance
+# (for the time being we will assume that the resistor value is known)
+
+# variable to simulate, with a default start value of 0
+var: Vc, constant, 0
+
+# the 'known' resistance value -- in fact this is wrong by a few ohms
+param: R, constant, 1000
+
+# this distribution defines the acceptable range of capacitance values
+# (beware of the 100F capacitor!)
+param: C, uniform, 1e-6, 100
+
+# job mode and solver determine the optimisation method
+# for significantly non-convex problems (which, let's face it, anything you model
+# via BCMD is likely to be -- even this toy RC-circuit job seems to bamboozle
+# some of the other solvers), the GLP/pswarm combo is recommended
+
+# job mode specifies the type of optimisation
+# currently supported modes are: GLP (recommended), NLP, NSP
+# (some configuration options for the latter 2 are not yet implemented)
+job_mode: GLP
+
+# for supported solvers see the OpenOpt documentation,
+# but GLP options include:
+#   pswarm (particle swarm -- recommended)
+#   galileo (a Genetic Algorithm method)
+#   de (2 array differential evolution)
+# (solver-specific configuration is not yet implemented)
+solver: pswarm
+
+# distance metric to be minimised
+# one of: euclidean (default), manhattan, cosine, loglik, mean, angular
+distance: euclidean
+
+# weighting for the output signals
+# in this case we only have one, so the default is fine
+# but include here just to check its working
+weight: Vc, 1
+
+# limit on number of iterations (default 1000, which is *a lot*)
+max_iter: 100
+
+# for the moment, only the capacitance may vary
+param_select: C
+
+# inputs -- can have perturbation distribs, but they are ignored
+input: V
+
+# use an alias for t to specify the t variable, if not using the default ' t'
+# in particular, you might need to alias t to itself
+# if explicitly including it by that name in a CSV
+alias: t, t
+
+# length of equilibration at start of simulation
+# default is 1000 time units
+# in this case we don't want any since the target data was generated without
+steady: 0

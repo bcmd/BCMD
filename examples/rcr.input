@@ -1,0 +1,9 @@
+# simple voltage input to our RCR circuit model
+@5
+: 1 V
+= 0 5 1
++ 5 0
++ 5 -1
++ 5 0
++ 5 1
+

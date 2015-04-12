@@ -1,0 +1,5 @@
+# default input file for the lorentz model
+@ 1
+: 1 sigma
+= 0 100 10
+

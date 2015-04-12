@@ -1,0 +1,6 @@
+# default input for the two pool calcium model (taken from BRAINCIRC implementation)
+@ 5
+: 1 r
+= 0 10 1
+* 4 10 1
+

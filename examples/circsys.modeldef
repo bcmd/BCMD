@@ -1,0 +1,14 @@
+# Simple circulatory system model translated from the BRAINCIRC module "circsys.dt"
+
+# reactions
+-> [bb] {MA:k0}                 "aasup"
+[bb] + [pp] -> [qq] {MA:k1}     "aadeg"
+[qq] -> [pp] {MA:k2}            "qqdeg"
+
+# initialisers
+bb := 1
+qq := 1
+pp := 1
+k0 := 1
+k1 := 1
+k2 := 1

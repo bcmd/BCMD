@@ -1,0 +1,14 @@
+# another simple RC circuit, this time with 2 resistors
+@output Vc V
+@input V
+
+Vc' = ((V - Vc)/R1 - Vc/R2)/C
+
+# initial values
+V := 0
+Vc := 0
+
+# params
+C := 0.1
+R1 := 10
+R2 := 1000
