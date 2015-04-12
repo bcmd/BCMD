@@ -1,0 +1,471 @@
+# BCMD translation of the BrainPiglet2.0 modules (adenkin2, funcact2, glycol, PCrtoATP2)
+
+# reactions
+# adenkin2
+2.0 [_ADP] <-> [_ATP] + [_AMP] {MA:k_ADPATP, 2.0} {MA:k_nADPATP}					"aden1"
+# funcact
+4.0 [a] + (p1+10.0/6.0)/R_Hi [H] -> 2.0 [NAD] + (p1+4.0)/(R_Hic/Vol_mit) [_Hy] {f1}			"a_red"
+p2/R_Hi [H] -> 4.0 [a] + 4.0 [bred] + p2/(R_Hic/Vol_mit) [_Hy] {f2}					"a_ox"
+[O2] + 4.0 [bred] + p3/R_Hi [H] -> {f3} 						 		"b_ox"
+1.0/(R_Hic/Vol_mit) [_Hy] -> 1.0/R_Hi [H] {L}								"psi_out"
+-> 1.0/Vol_mit [O2] {J_O2}										"O2_init"
+# glycol
+2.0 [_ADP] + 2.0 [_P] + [_gluc] + 2.0 [NADcyt] -> 2.0 [_ATP] + 2.0 [_Py0] + 4.0/R_Hic [_Hy] 
+	{MM : Vmax_glucN, Km_glucNA, Km_glucNP, Km_glucNgl, Km_glucNN}					"glycol"
+[_Py0] + 1.0/R_Hic [_Hy] <-> [_L0] + [NADcyt] {MA:k_PytoLac} {MA:k_nPytoLac}				"PytoLac"
+1.0/(1.0/Vol_mit) [_Py0] + 5.0 [NAD] + 1.0/(R_Hic/Vol_mit) [_Hy] -> 4.0/R_Hi [H] + 3.0 [_mCO2] {k_TCA}	"TCA"
+-> [_gluc] {v_gluc_in*v_gluc_trans}									"glucose_in"
+[_gluc] -> {MM : v_gluc_trans, k_gluc_trans}								"glucose_out"
+-> [_L0] + 1.0/R_Hic [_Hy] {v_lac_in*v_lac_trans}							"lactate_in"
+[_L0] + 1.0/R_Hic [_Hy] -> 
+	{v_lac_trans*_L0*_Hy/((k_lac_trans + _L0)*(k_lac_h + _Hy))} 					"lactate_out"
+1.0/R_Hic [_Hy] + 1.0/Vol_mit [NAD] <-> [NADcyt] + 1.0/(R_Hi*Vol_mit) [H] 
+	{MA:k_MAshut} {MA:k_nMAshut}									"MAshut"
+[_PCr] + [_ADP] + 1.0/R_Hic [_Hy] <-> [_ATP] + [_Cr] {MA:k_PCrATP} {MA:k_nPCrATP}			"PCrtoATP"
+[_ADP] + [_P] -> [_ATP] {kATP}										"ADPtoATP"
+[_ATP] -> [_ADP] + [_P] {MM : v_ATP, kmATP}								"ATPtoADP"
+
+#new additions for mit pH
+[_mCO2] <-> 1.0/R_Hi [H] + [_mBiC] {MA:k_CHm} {MA:k_nCHm}						"CO2toHm"
+[_CO2] <-> 1.0/R_Hic [_Hy] + [_BiC] {MA:k_CHi} {MA:k_nCHi}						"CO2toHy"
+[_BiC] <-> 1.0/Vol_mit [_mBiC] {MA:k_BiCshut} {MA:k_nBiCshut}						"BiCshuttle"
+[_CO2] <-> 1.0/Vol_mit [_mCO2] {MA:k_CO2shut} {MA:k_CO2shut}						"CO2shuttle"
+[_CO2] -> {k_CO2_out}											"CO2_out"
+[_ATP] + 3.0 [_Na] -> [_ADP] + [_P] {V_pp}								"protonpump"
+-> [_Na] {MA:k_Na}											"Na_inout"
+1.0/R_Hic [_Hy] -> [_Na] {i_NHE}									"NHE"
+-> [_Na] + [_BiC] {V_NaBiC}										"Na_BiC_cotransporter"
+
+# algorithmic relations
+XOv : 0 = CBF*(XOa-XOv)-J_O2										"XOvrel"
+O2c : 0 = phi*pow(ScO2/(1.0-ScO2), 1.0/n_h)-O2c 							"O2crel"
+r : 0 = T_e + T_m - (P_1-P_ic)*r             								"r_rel"
+
+# explicit differential equations
+v_p' = 1.0/t_p*(P_a2 - v_p)                     							"v_prel"
+v_u' = 1.0/t_u*(u - v_u)                       								"v_urel"
+v_c' = 1.0/t_c*(Pa_CO2 - v_c)                  								"v_crel"
+v_o' = 1.0/t_o*(O2c - v_o)                     								"v_orel"
+Dpsi' = (p2*f2+p1*f1+p3*f3-L)/C_im           								"Dpsirel"
+
+
+# intermediates
+AVR = Vol_art/Vol_ven
+CBF = G*(P_a2-P_v)
+CCO = CCO_offset+1000.0*Vol_mit*(a-a_n)
+CMRO2 = f3*Vol_mit
+C_0i = ((pow(10.0,(-pH_m))) - (pow(10.0,(-pH_m-dpH))))/dpH
+C_0ic = ((pow(10.0,(-pH_o))) - (pow(10.0,(-pH_o-dpH))))/dpH
+C_NADH = Z/2.0*log10(1.0/NADNADHrat)
+#DG1 = -4.0*(E_1+Z*log10(a/ared)) + p1*Dp
+#DG2 = -4.0*(E_2+Z*(log10(ared/a)-log10(bred/b))) + p2*Dp
+DGp = Gp0 + Z*Fdy*log10(gp)
+DHHb = DHHb_offset + HHb-HHbn
+DHbO2 = DHbO2_offset + HbO2-HbO2n
+DHbT = DHbT_offset + HbT-HbTn
+DHbdiff = DHbdiff_offset + (DHbO2 - DHHb)
+Dp = Dpsi+ Z*DpH
+DpH = pH_m-pH_o
+E1NADH = (E_c0 - E_N0) + C_NADH
+E_1 = E1NADH
+G = K_G*pow(r, 4.0)
+HHb = (Vol_art*Xa + Vol_ven*Xv)/4.0*blood_frac*1000.0
+HbO2 = (Vol_art*XOa + Vol_ven*XOv)/4.0*blood_frac*1000.0
+HbT = (Vol_art+Vol_ven)*Xtot/4.0*blood_frac*1000.0
+JO2 = fmin(D_O2*(O2c-O2), CBF*XOa)
+J_O2 = JO2
+Keq1 = pow(10.0, (-1.0/Z*(p1*Dp/4.0 - E_1)))
+Keq2 = pow(10.0, (-1.0/Z*(p2*Dp/4.0 - E_2)))
+L = L_CV+L_lk
+L_CV = CVinh*L_CVmax*(1.0 - exp(-theta))/(1.0 + r_CV*exp(-theta))
+L_lk = k_unc*L_lk0*(exp(Dp*k_lk2)-1.0)
+NADH = NADpool - NAD
+NADNADHrat = NAD/NADH 
+P_1 = (P_a2+P_v)/2.0
+P_v = ((Gt/G_v)*(P_a-P_vs)+P_vs)
+R_Hi = r_buffi
+R_Hic = r_buffic
+ScO2 = (SaO2sup + SvO2)/2.0
+SvO2 = XOv/Xtot
+TOI = 100.0*((pow((r/r_n), 2.0)/(pow((r/r_n), 2.0) + (Vol_ven/Vol_artn)))*XOa+((Vol_ven/Vol_artn)/(pow((r/r_n), 2.0) + (Vol_ven/Vol_artn)))*XOv)/Xtot
+T_e = sigma_e*h
+T_m = T_max*exp(-pow(fabs((r-r_m)/(r_t-r_m)), n_m))
+T_max = T_max0*(1.0+k_aut*mu)
+Vmca = CBF*CBFscale
+Vol_art = Vol_artn*pow((r/r_n), 2.0)
+Vol_tot = Vol_art + Vol_ven
+Vol_ven = Vol_venn+C_v*(P_v-P_vn)
+Xv = Xtot-XOv
+ared = cytox_tot - a
+b = cytox_tot - bred
+eta = R_autp*(v_p/v_pn - 1.0) + R_auto*(v_o/v_on-1.0) + R_autu*(1.0-v_u/v_un) + R_autc*(1.0 - v_c/v_cn) 
+f1 = k1*a-kn1*ared
+f2 = k2*ared*b-kn2*a*bred
+f3 = k3*O2*bred*exp(-c3*(Dp-Dp_30))/(1.0+exp(-c3*(Dp-Dp_30)))
+gp = (_ADP*_P)/(_ATP*1000.0) 
+h = -r + sqrt(pow(r,2.0) + 2.0*r_0*h_0 + h_0*h_0)
+k1 = k10*exp(-ck1*(Dp-Dp_n))
+k10 = k1_n*(NADpool/(1.0+NADNADHrat))/NADHn
+k2 = k2_n*exp(-ck2*(Dp-Dp_n))
+kn1 = k1/Keq1
+kn2 = k2/Keq2
+mu = (mu_min + mu_max*exp(eta))/(1.0 + exp(eta))
+pH_m = -log10(H/1000.0)
+pH_o = -log10(_Hy/1000.0)
+r_buffi = C_buffi/C_0i
+r_buffic = C_buffic/C_0ic
+sigma_e = sigma_e0*(exp(K_sigma*(r-r_0)/r_0) - 1.0) - sigma_coll
+theta = kCV*(Dp + Z/na*log10(gp/gp_n)-Dp_CV0)
+Gt = ((G*G0*G_v)/(G*G0+G*G_v+G_v*G0))
+P_a2 = ((G0*P_a+G*P_v)/(G+G0))
+Vmax_glucN = Vmax_glucNn*(Inh_glucN + 1.0)/(1.0 + Inh_glucN*(_ATP/_ATPn)*(_AMPn/_AMP))
+k_TCA = v_TCA*_Py0*NAD/((Km_NAD + NAD)*(Km_Py+_Py0))
+NADHcyt= (NADcytn + NADHcytn) - NADcyt
+k_MAshut = ((CMRO2_n*NADHcyt)/3.0)/(NADn*_Hyn*NADHcyt - (1.0/Keq_MAshut)*NADcytn*H_n*NADH)
+k_nMAshut = ((k_MAshut*NADH/NADHcyt)/Keq_MAshut)
+k_PytoLac = ((2.0*CMRglucn-CMRO2_n/3.0)+k_nPytoLac*_L0n*NADcytn)/(_Py0n*_Hyn)*(NADHcyt/NADHcytn)
+v_ATP = (L_CVn*Vol_mit/na+2.0*CMRglucn)*(1.0+km)*u
+kATP = L_CV*Vol_mit/na
+EPP = _Pn + _PCrn + 2*_ATPn + _ADPn
+NTP_EPP = _ATP/EPP
+k_Na = 1.0*(_Nan - _Na)
+i_NHE = ((Vmax_NHE*(_Nan -_Na))/(Km_NHE+(_Nan -_Na)) )* (1/(1+ exp(NapH*(pH_o - 6.7))))
+K_KATPA = _ATP/(Km_KATPA + _ATP)
+K_KATPNa = _Na/(Km_KATPNa + _Na)
+V_pp = Vmax_KATPm*(_ATP-_ATPn)*pow((_Na-_Nan), 3.0)/((Km_KATPA + (_ATP-_ATPn))*(pow(Km_KATPNa, 3.0) + pow((_Na-_Nan), 3.0)))
+
+V_NaBiC = Vmax_NaBiC*(_Nan - _Na)*(_BiCn - _BiC)/((Km_NaBiC + (_Nan - _Na))*(Km_NaBiC + (_BiCn-_BiC)))
+
+k_CHm = log(2.0)/(k_CHm_ht*(1.0 + H_n/k_CH_eqm))
+k_nCHm = log(2.0)/(k_CHm_ht*(H_n + k_CH_eqm))
+
+k_CH_eqm = H_n*_mBiCn/_mCO2n
+
+k_CHi = log(2.0)/(k_CHi_ht*(1.0 + _Hyn/k_CH_eqi))
+k_nCHi = log(2.0)/(k_CHi_ht*(_Hyn + k_CH_eqi))
+
+k_CH_eqi = _Hyn*_BiCn/_CO2n
+
+k_BiCshut = log(2.0)/(k_BiCshut_ht*(1.0/1.0 + ((1.0/Vol_mit)/k_BiCshut_eq)))
+k_nBiCshut = log(2.0)/(k_BiCshut_ht*(k_BiCshut_eq/1.0 + 1.0/Vol_mit))
+k_BiCshut_eq = _mBiCn/_BiCn
+
+k_CO2shut = CMRO2_n/(_mCO2n - _CO2n)
+k_CO2_out = CMRO2_n*( _CO2 )/( _CO2n)
+
+# initial values of root variables
+_AMP := _AMPn
+r := r_init
+a := a_init
+bred := bred_init
+O2 := O2_init
+XOv := XOv_init
+O2c := O2c_init
+H := H_init
+_Hy := _Hyn
+v_p := v_pn
+v_u := v_un
+v_c := v_cn
+v_o := v_on
+Dpsi := Dpsi_init
+NAD := NADn
+_Py0 := _Py0n
+_L0 := _L0n
+_gluc := _glucn
+NADcyt := NADcytn
+_PCr := _PCrn
+_ADP := _ADPn
+_ATP := _ATPn
+_P := _Pn
+_Cr := _Crn
+_mCO2 := _mCO2n
+_mBiC := _mBiCn
+_CO2 := _CO2n
+_BiC := _BiCn
+_Na := _Nan
+
+# constraints
+XOv >= 0
+O2c >= 0
+r >= 0
+v_lac_trans > 0
+
+# parameters
+r0 = (1.0-rfrac*rocc)
+G0 = K_G0*r0*r0*r0*r0
+XOa = Xtot*SaO2sup
+O2a = phi*pow(SaO2sup/(1.0-SaO2sup), 1.0/n_h)
+Xa = Xtot*(1.0-SaO2sup)
+
+_ADPn := 0.012
+a_frac_n := 0.67
+a_init := a_n
+_AMPn := k_ADPATP_eq*pow(_ADPn, 2.0)/_ATPn
+a_n := cytox_tot*a_frac_n
+ared_n := cytox_tot - a_n
+_ATPn := 1.2
+blood_frac := 0.0325
+b_n := cytox_tot - bred_n
+bred_init := bred_n
+bred_n := f_n/k3/O2_n/(exp(-c3*(Dp_n-Dp_30))/(1.0+exp(-c3*(Dp_n-Dp_30))))
+c3 := 0.11
+CBFn := 0.008
+CBFscale := 5000.0
+C_buffi := 0.022
+C_buffic := 0.025
+CCO_offset := 0.0
+c_frac := 0.8
+C_im := 0.00675
+ck1 := 0.01
+ck2 := 0.02
+CMRglucn := 0.0044
+CMRO2_n := 0.02
+C_NADH_n := Z/2.0*log10(1.0/NADNADHratn)
+_Crn := (k_PCrATP_eq_ef*_ADPn*_PCrn)/_ATPn
+C_v := 0.047
+CVinh := 1.0
+cytox_tot := cytox_tot_tis/Vol_mit
+cytox_tot_tis := 0.0022
+#DG1_n := -4.0*(E_1n+Z*log10(a_n/ared_n)) + p1*Dp_n
+#DG2_n := -4.0*(E_2+Z*(log10(ared_n/a_n)-log10(bred_n/b_n))) + p2*Dp_n
+DGpn := Gp0 + Z*Fdy*log10(gp_n)   
+DHbdiff_offset := 0.0
+DHbO2_offset := 0.0
+DHbT_offset := 0.0
+DHHb_offset := 0.0
+D_O2 := J_O2n/(O2c_n-O2_n)
+Dp_30 := Dp_n + Dp3_corr
+Dp3_corr := -25.0
+Dp_CV0 := -DGpn/(na*Fdy)
+dpH := 0.001
+DpH_n := pH_mn - pH_on
+Dp_n := Dpsi_n+Z*DpH_n
+Dpsi_init := Dpsi_n
+Dpsi_n := 145.0
+E1NADH_n := (E_c0 - E_N0) + C_NADH_n
+E_1n := E1NADH_n
+E_2 := (E_a30 - E_c0)
+E_a30 := 350.0
+E_c0 := 250.0
+E_N0 := -320.0
+Fdy := 96.4853
+f_n := CMRO2_n/Vol_mit
+
+G0n := G0rat*Gn
+G0rat := 10.0
+gluc_c := 5.3
+_glucn := 1.2
+glyc_an := pow(_ADPn,2.0)/(pow(Km_glucNA,2.0)+pow(_ADPn, 2.0))
+glyc_gn := _glucn/(Km_glucNgl+_glucn)
+glyc_pn := pow(_Pn,2.0)/(pow(Km_glucNP,2.0)+pow(_Pn, 2.0))
+glyc_nn := pow(NADcytn,2.0)/(pow(Km_glucNN,2.0)+pow(NADcytn, 2.0))
+Gn := CBFn/(P_an-P_vs)*(1.0+1.0/G0rat+1.0/G_VAratn) 
+Gp0 := -30500.0
+gp_n := (_ADPn*_Pn)/(_ATPn*1000.0)
+Gtn := Gn*G0n*G_v/(Gn*G0n+Gn*G_v+G_v*G0n)
+G_VAratn := 4.0
+G_v := G_VAratn*Gn
+h_0 := 0.003
+HbO2n := (Vol_artn*XOa_n + Vol_venn*XOv_n)/4.0*blood_frac*1000.0
+HbTn := (Vol_artn+Vol_venn)*Xtot_n/4.0*blood_frac*1000.0
+henry_O2 := 1.4000e-03
+HHbn := (Vol_artn*Xa_n + Vol_venn*Xv_n)/4.0*blood_frac*1000.0
+H_init := H_n
+H_n := pow(10.0, 3.0-pH_mn)
+h_n := -r_n + sqrt(pow(r_n,2.0) + 2.0*r_0*h_0 + h_0*h_0)
+_Hyn := 1000.0*pow(10.0,-pH_on)
+Inh_glucN := 3.0
+J_O2n := CMRO2_n
+k1_n := f_n/(a_n-1.0/Keq1_n*ared_n)
+k2_n := f_n/(ared_n*b_n-1.0/Keq2_n*a_n*bred_n)
+k30 := 2.5e+05
+k3 := k30/(exp(-c3*(Dp_n-Dp_30))/(1.0+exp(-c3*(Dp_n-Dp_30))))
+#k3 := k30/(exp(-c3*(0.0-Dp_30))/(1.0+exp(-c3*(0.0-Dp_30)))
+k_ADPATP := 1055.0
+k_ADPATP_eq := k_ADPATP/k_nADPATP
+k_ADPATP_ht := 0.000002
+k_aut := 1.0
+kCV := -1.0/(Dp_n-Dp_CV0)*log((1.0-L_CV0)/(1.0+r_CV*L_CV0))
+Keq1_n := pow(10.0, (-1.0/Z*(p1*Dp_n/4.0 - E_1n)))
+Keq2_n := pow(10.0, (-1.0/Z*(p2*Dp_n/4.0 - E_2)))
+Keq_MAshut := 10.0
+K_G0 := G0n
+K_G := Gn/pow(r_n, 4.0)
+k_gluc_trans := 6.2
+k_lac_h := pow(10.0, -k_lac_ph)
+k_lac_ph := 7.0
+k_lac_trans := 2.0
+k_lk2 := 0.038
+km := 0.025
+kmATP := _ATPn*km
+Km_glucNAf := 0.2
+Km_glucNA := Km_glucNAf*_ADPn
+Km_glucNgl := 0.5000e-01
+Km_glucNN := Km_glucNNf*NADcytn
+Km_glucNNf := 0.2
+#Km_glucNN := 0.0
+Km_glucNPf := 0.2
+Km_glucNP := Km_glucNPf*_Pn
+Km_NADf := 0.6
+Km_NAD := Km_NADf*NADn           
+Km_Pyf := 0.005
+Km_Py := Km_Pyf*_Py0n
+k_nADPATP := 379.0
+k_nPCrATP := log(2.0)/((k_PCrATP_eq*_PCrn*_ADPn+_Crn+_ATPn)*k_PCrATP_ht)
+k_nPytoLac := k_PytoLac_ht
+k_PCrATP_eq_ef := 166.0
+k_PCrATP_eq := k_PCrATP_eq_ef/_Hyn
+k_PCrATP_ht := 0.00002 
+k_PCrATP := log(2.0)/((_PCrn*_ADPn+(_Crn+_ATPn)/k_PCrATP_eq)*k_PCrATP_ht)
+k_PytoLac_ht := 10.0
+K_sigma := 10.0
+k_TCAn := (1.00/3.00)*(CMRO2_n/Vol_mit)
+k_unc := 1.0
+_L0n := 3.0
+lac_c := 1.0
+L_CV0 := 0.4
+L_CVfrac := 1.0 - L_lkfrac
+L_CVmax := L_CVn/L_CV0
+L_CVn := L_n*L_CVfrac
+L_lk0 := L_lkn/(exp(Dp_n*k_lk2)-1.0)
+L_lkfrac := 0.25
+L_lkn := L_n*L_lkfrac
+L_n := p_tot*f_n
+mu_max := 1.0
+mu_min := -1.0
+mu_n := 0.0
+na := 4.33
+NADcytn := 359.0
+NADHcytn :=  50.0
+NADHn := NADpool - NADn
+
+#NADNADHcytratn := 7.2
+#used total values instead
+
+NADNADHratn := 9.0
+NADn := NADpool/(1.0 + 1.0/NADNADHratn)
+NADpool := 3.0
+n_h := 2.5
+n_m := 1.83
+
+O2c_init := O2c_n
+O2c_n := phi*pow(ScO2_n/(1.0-ScO2_n), 1.0/n_h)
+O2_init := O2_n
+O2_n := 0.024
+O2n := O2_n
+O2v_n := phi*pow(XOv_n/(Xtot_n - XOv_n), 1.0/n_h)
+P_1n := (P_a2n+P_vn)/2.0
+p1 := p_tot - p23
+p23 := 4.0*2.0
+p2 := 4.0*1.0
+p3 := p23-p2
+P_a := 50.0
+P_a2n := (G0n*P_an+Gn*P_vn)/(Gn+G0n)
+Pa_CO2 := 40.0
+Pa_CO2n := 40.0
+P_an := 50.0
+PaO2 := O2a/henry_O2
+_PCrn := 2.6
+PCrPn := 2.73
+phi := 0.036
+pH_mn := 8.0
+#7.4
+pH_on := 7.1
+#7.0
+P_ic := 4.5
+P_icn := 4.5
+_Pn := _PCrn/PCrPn
+p_tot := 18.40
+P_vn := (Gtn/G_v)*(P_an-P_vs)+P_vs
+P_vs := 1.5
+_Py0n := 0.1
+r_0 := 0.0126
+R_autc := 2.2
+R_auto := 1.5
+R_autp := 4.0
+R_autu := 0.0
+r_CV := 5.0
+rfrac := 1.0-sqrt(sqrt(1.0-c_frac))
+r_init := r_n
+r_m := 0.027
+r_n := 0.0187
+rocc := 0.0
+r_t := 0.018
+SaO2_n := 0.96
+SaO2sup := 0.96
+ScO2_n := (SaO2_n + SvO2_n)/2.0
+sigma_coll := 62.79
+sigma_e0 := 0.1425
+sigma_en := sigma_e0*(exp(K_sigma*(r_n-r_0)/r_0) - 1.0) - sigma_coll
+SvO2_n := XOv_n/Xtot_n
+t_c := 5.0
+T_en := sigma_en*h_n
+T_max0 := T_maxn/(1.0+k_aut*mu_n)
+T_maxn := T_mn/exp(-pow(fabs((r_n-r_m)/(r_t-r_m)), n_m))
+T_mn := (P_1n-P_icn)*r_n - T_en
+t_o := 20.0
+toif1 := 0.0
+toif2 := 0.0   
+t_p := 5.0
+t_u := 0.5
+u := 1.0
+u_n := 1.0
+u_psi := Dpsi_n/Dp_n
+VArat_n := 3.0
+v_cn := Pa_CO2n
+v_gluc_in := gluc_c / (k_gluc_trans+ gluc_c)
+v_gluc_trans := CMRglucn/(v_gluc_in - _glucn/(_glucn+k_gluc_trans))
+v_lac_in := lac_c/(k_lac_trans+lac_c)
+v_lac_trans := (2.0*CMRglucn-CMRO2_n/3.0)/((_L0n*_Hyn)/((_L0n+k_lac_trans)*(_Hyn+k_lac_h))-v_lac_in)
+Vmax_glucNn :=  CMRglucn / (glyc_gn*glyc_pn*glyc_an*glyc_nn)
+Vol_artn := Vol_totn/(1.0+VArat_n)
+Vol_mit := 0.067
+Vol_totn := 1.0
+Vol_venn := Vol_totn*(VArat_n/(1.0+VArat_n))	
+v_on := O2c_n
+v_pn := P_a2n
+v_TCA := k_TCAn/(_Py0n*NADn)*(Km_NAD + NADn)*(Km_Py+_Py0n)
+v_un := u_n
+Xa_n := Xtot_n*(1.0-SaO2_n)
+
+XOa_n := Xtot_n*SaO2_n
+
+XOv_init := XOv_n
+XOv_n := (CBFn*XOa_n-J_O2n)/CBFn
+Xtot_n := 5.4
+Xtot := Xtot_n
+Xv_n := Xtot_n-XOv_n
+Z := 59.028
+
+Km_KATPA := 1.4
+Km_KATPNa := 2.0
+#8.0-30.0
+Km_NHE := 23.0
+Vmax_KATPm := 72.9
+_Nan := 15.0
+
+NapH := 1.0
+Vmax_NHE := 0.0255
+
+Vmax_NaBiC := 0.0009775
+#bit of guesswork - available in wrong units
+
+Km_NaBiC := 10.4
+
+_mCO2n := 1.2*_CO2n
+# a little higher than outside the mitochondria?
+
+_BiCn := 0.95*k_CH_eq*_CO2n/_Hyn
+
+# from dCO2/dt + dBiC/dt = 0 and the assumption of equilibrium in the blood. 
+ 
+_CO2n := PtCO2n*henry_CO2t
+henry_CO2t := 3.8000e-02
+PtCO2n := 5.4000e+01
+
+_mBiCn := k_CH_eq*_mCO2n/H_n
+
+k_CHm_ht := 25.0
+k_CHi_ht := 3.2
+k_CH_eq := 7.9000e-04
+k_BiCshut_ht := 2.2000e+03

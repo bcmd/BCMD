@@ -40,6 +40,7 @@
 		<string>max_iter</string>
 		<string>steady</string>
 		<string>weight</string>
+		<string>timestep</string>
 	</array>
 	<key>BBLMPredefinedNameList</key>
 	<array>

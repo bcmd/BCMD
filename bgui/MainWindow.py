@@ -23,6 +23,8 @@ import batch.inputs as inputs
 import bparser.info as info
 import bparser.doc_html as doc_html
 import bparser.doc_latex as doc_latex
+import bparser.doc_modeldef as doc_modeldef
+import bparser.doc_sbml as doc_sbml
 import batch.siggen as siggen
 
 # notes to self:
@@ -102,6 +104,8 @@ class MainWindow(ttk.Frame):
         self.doc_tabular_state = tk.IntVar()
         self.doc_display_state = tk.IntVar()
         self.doc_align_state = tk.IntVar()
+        
+        self.export_derived_state = tk.IntVar()
         
         # inputs pane
         self.param_file_state = tk.IntVar()
@@ -650,7 +654,7 @@ class MainWindow(ttk.Frame):
     def add_info_panel(self):
         self.info_panel = ttk.Frame(self.top_level)
         self.info_panel.columnconfigure(1, weight=1)
-        self.info_panel.rowconfigure(7, weight=1)
+        self.info_panel.rowconfigure(9, weight=1)
         
         ttk.Label(self.info_panel, text='Model').grid(column=1, row=1, sticky=tk.W)
         self.model_info_field = ttk.Entry(self.info_panel, width=10, textvariable=self.model_name)
@@ -684,20 +688,33 @@ class MainWindow(ttk.Frame):
          
         self.doc_tabular_check = ttk.Checkbutton(self.doc_panel, text='Tabular', variable=self.doc_tabular_state)
         self.doc_display_check = ttk.Checkbutton(self.doc_panel, text='Display Style', variable=self.doc_display_state)
-        self.doc_align = ttk.Checkbutton(self.doc_panel, text='Align Eqs', variable=self.doc_align_state)
+        self.doc_align_check = ttk.Checkbutton(self.doc_panel, text='Align Eqs', variable=self.doc_align_state)
         
         self.doc_tabular_check.grid(row=1, column=1, sticky=(tk.W, tk.E))
         self.doc_display_check.grid(row=1, column=2, sticky=(tk.W, tk.E))
-        self.doc_align.grid(row=1, column=3, sticky=(tk.W, tk.E))
+        self.doc_align_check.grid(row=1, column=3, sticky=(tk.W, tk.E))
         
         ttk.Button(self.info_panel, text='HTML', command=self.action_make_html).grid(column=3, row=6, sticky=(tk.W, tk.E))
         ttk.Button(self.info_panel, text='LaTeX', command=self.action_make_latex).grid(column=4, row=6, sticky=(tk.W, tk.E))
 
         ttk.Label(self.info_panel, text='Documentation').grid(column=1, row=5, sticky=tk.W)
         self.doc_panel.grid(row=6, column=1, columnspan=2, sticky=(tk.N, tk.W, tk.E, tk.S))
+
+        self.export_panel = ttk.Frame(self.info_panel)
+        self.export_derived_check = ttk.Checkbutton(self.export_panel, text='# Chem Diffs', variable=self.export_derived_state)
+        self.export_derived_check.grid(row=1, column=1, sticky=(tk.W, tk.E))
+        
+        ttk.Button(self.info_panel, text='ModelDef', command=self.action_make_modeldef).grid(column=3, row=8, sticky=(tk.W, tk.E))
+        if doc_sbml.AVAILABLE:
+            ttk.Button(self.info_panel, text='SBML', command=self.action_make_sbml).grid(column=4, row=8, sticky=(tk.W, tk.E))
+        else:
+            ttk.Button(self.info_panel, text='SBML', state='disabled', command=self.action_make_sbml).grid(column=4, row=8, sticky=(tk.W, tk.E))
+        
+        ttk.Label(self.info_panel, text='Model Export').grid(column=1, row=7, sticky=tk.W)
+        self.export_panel.grid(row=8, column=1, columnspan=2, sticky=(tk.N, tk.W, tk.E, tk.S))
         
         self.info_text = stxt.ScrolledText(self.info_panel, autogrid=False)
-        self.info_text.grid(row=7, column=1, columnspan=4, sticky=(tk.N, tk.W, tk.E, tk.S))
+        self.info_text.grid(row=9, column=1, columnspan=4, sticky=(tk.N, tk.W, tk.E, tk.S))
         
         self.top_level.add(self.info_panel, text='Info')
 
@@ -763,7 +780,9 @@ class MainWindow(ttk.Frame):
 
         self.config.latex_tabular = bool(self.doc_tabular_state.get())
         self.config.latex_displaystyle = bool(self.doc_display_state.get())
-        self.config.latex_align = bool(self.doc_align_state.get())    
+        self.config.latex_align = bool(self.doc_align_state.get())
+        
+        self.config.export_derived = bool(self.export_derived_state.get())
 
 
     def sync_from_config(self):
@@ -806,6 +825,8 @@ class MainWindow(ttk.Frame):
         self.doc_tabular_state.set(int(self.config.latex_tabular))
         self.doc_display_state.set(int(self.config.latex_displaystyle))
         self.doc_align_state.set(int(self.config.latex_align))
+
+        self.export_derived_state.set(int(self.config.export_derived))
 
     # Event handlers
     
@@ -964,6 +985,32 @@ class MainWindow(ttk.Frame):
 
         doc_latex.writeDoc(self.parsed_model, info.CONFIG)
     
+    def action_make_modeldef(self):
+        self.sync_to_config()
+        
+        if self.parsed_model is None:
+            self.action_parse_info()
+        
+        info.CONFIG['outdir'] = self.config.work
+        info.CONFIG['name'] = self.config.model_name
+        info.CONFIG['model-comment-chem-diffs'] = self.config.export_derived
+        info.CONFIG['modeldef'] = self.config.model_name + self.config.extensions['modeldef']
+
+        doc_modeldef.writeDoc(self.parsed_model, info.CONFIG)
+        
+    def action_make_sbml(self):
+        self.sync_to_config()
+        
+        if self.parsed_model is None:
+            self.action_parse_info()
+        
+        info.CONFIG['outdir'] = self.config.work
+        info.CONFIG['name'] = self.config.model_name
+        info.CONFIG['sbml'] = self.config.model_name + self.config.extensions['sbml']
+
+        doc_sbml.writeDoc(self.parsed_model, info.CONFIG)
+        
+    
     # choose a model definition
     def action_choose_model(self):
         self.sync_to_config()
@@ -1066,8 +1113,8 @@ class MainWindow(ttk.Frame):
                     'title': 'Choose Data File' }
         self.config.set_data_file(tkFileDialog.askopenfilename(**options))
         self.sync_from_config()
+        self.load_data_file()
         self.show_signals()
-        # TODO: attempt to read the file and put the columns into the appropriate menu(s)
  
     # choose the directory to generate input files in
     def action_choose_generate_dir(self):

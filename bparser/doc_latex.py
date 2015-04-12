@@ -108,7 +108,7 @@ def printReactions(file, model, config):
         elif fspec[1] == 'MM':
             forward = 'MM'
         else:
-            forward = translate(fspec[2][1][1], model, config)[0]
+            forward = '{%s}' % translate(fspec[2][1][1], model, config)[0]
         
         # if there's a reverse reaction, get that rate too
         if reac.endswith('_forward') and (reac[:-7] + 'reverse') in model['reactions']:
@@ -118,7 +118,7 @@ def printReactions(file, model, config):
             elif rspec[1] == 'MM':
                 reverse = 'MM'
             else:
-                reverse = translate(fspec[2][1][1], model, config)[0]            
+                reverse = '{%s}' % translate(fspec[2][1][1], model, config)[0]            
             op = '<->'
         else:
             reverse = ''

@@ -32,6 +32,8 @@ PREF_FIELDS = [ 'model_path', 'input_path',
                 'latex_tabular', 'latex_displaystyle',
                 'latex_align',
                 
+                'export_derived',
+                
                 'param_file', 'use_param_file',
                 'use_explicit', 'omit_non_model_params',
                 'steady_duration', 'do_steady',
@@ -69,6 +71,7 @@ EXTENSIONS = {'model': os.extsep + 'model',
               'csv' : os.extsep + 'csv',
               'latex' : os.extsep + 'tex',
               'html' : os.extsep + 'html',
+              'sbml' : os.extsep + 'xml'
               }
 
 FACTORY_PRESETS =  { 'Noise: N(0,1)' : [{ 'kind':'gaussian', 'lo':None }],
@@ -144,6 +147,8 @@ class Config(object):
         self.latex_tabular = False
         self.latex_displaystyle = True
         self.latex_align = False
+        
+        self.export_derived = False
         
         self.default_width = 800
         self.default_height= 600

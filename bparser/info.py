@@ -15,6 +15,8 @@ from decimal import Decimal
 import doc_html
 import doc_latex
 import doc_text
+import doc_modeldef
+import doc_sbml
 
 CONFIG = { 'name' : 'unknown',
            'unused' : True,
@@ -32,11 +34,14 @@ CONFIG = { 'name' : 'unknown',
            'text' : False,
            'html' : False,
            'latex' : False,
+           'modeldef' : False,
+           'sbml' : False,
            'css-embed' : True,
            'css-src' : None,
            'eq-align': False,
            'latex-display-style': True,
-           'latex-include-code': True
+           'latex-include-code': True,
+           'model-comment-chem-diffs': False
           }
 
 # functions to output information about the structure of a model
@@ -232,16 +237,6 @@ def modelInfo(model, config):
         for name in model['unknown']: result += name + '\n'
     
     return result
-
-# write documentation in (for the moment) plain text format
-def writeDoc(model, config):
-    with open(os.path.join(config['outdir'], config['text']), 'w') as f:
-        printHeader(f, model, config)
-        printModelDescription(f, model, config)
-        printDiffs(f, model, config)
-        printAlgs(f, model, config)
-        printIntermeds(f, model, config)
-        printParameters(f, model, config)
         
 def printHeader(file, model, config):
     print >> file, 'Model information for %s' % config['name']
@@ -559,6 +554,8 @@ def process_args():
     ap.add_argument('-t', '--text', help='specify output of plain text documentation', nargs='?', default=None, const='', metavar='FILE')
     ap.add_argument('-l', '--latex', help='specify output of LaTeX documentation', nargs='?', default=None, const='', metavar='FILE')
     ap.add_argument('-H', '--html', help='specify output of HTML documentation', nargs='?', default=None, const='', metavar='FILE')
+    ap.add_argument('-m', '--modeldef', help='specify output of consolidated model definition', nargs='?', default=None, const='', metavar='FILE')
+    ap.add_argument('-S', '--sbml', help='specify output of model in SBML format', nargs='?', default=None, const='', metavar='FILE')
     ap.add_argument('-a', help='generate all major graph variants (using default names)', action='store_true')
     ap.add_argument('-n', '--name', help='specify a model name instead of deriving from file', metavar='NAME')
     ap.add_argument('-U', '--graphxunused', help='specify output of graph excluding unused elements', nargs='?', default=None, const='', metavar='FILE')
@@ -604,6 +601,18 @@ def process_args():
             config['html'] = config['name'] + '.html'
         else:
             config['html'] = args.text
+            
+    if args.modeldef is not None:
+        if args.modeldef == '':
+            config['modeldef'] = config['name'] + '.modeldef'
+        else:
+            config['modeldef'] = args.text
+
+    if args.sbml is not None:
+        if args.sbml == '':
+            config['sbml'] = config['name'] + '.xml'
+        else:
+            config['sbml'] = args.text
     
     config['graph-exclude-self'] = not args.graphself
     
@@ -719,6 +728,10 @@ if __name__ == '__main__':
             doc_latex.writeDoc(model, config)
         if config['html']:
             doc_html.writeDoc(model, config)
+        if config['modeldef']:
+            doc_modeldef.writeDoc(model, config)
+        if config['sbml']:
+            doc_sbml.writeDoc(model, config) 
         if config['log-info']:
             logger.dest = sys.stdout
             logModelInfo(model, config)

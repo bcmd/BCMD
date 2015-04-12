@@ -116,6 +116,7 @@ L_CVfrac = 1 - L_lkfrac
 L_CVmax = L_CVn/L_CV0
 L_n = p_tot*f_n
 NADH = NADpool/(1+NADNADHrat)
+NADNADHrat = supp*NADNADHratn/pow(u, 2*D_NADH)
 O2a = phi*pow(SaO2sup/(1-SaO2sup), 1/n_h)
 p1 = p_tot - p23
 PaO2 = O2a/henry_O2
@@ -237,7 +238,6 @@ mu_min := -1
 mu_n := 0
 NADHn := NADpool/(1+NADNADHratn)
 NADNADHratn := 9
-NADNADHrat := supp*NADNADHratn/pow(u, 2*D_NADH)
 NADpool := 3
 n_h := 2.5
 n_m := 1.83
@@ -334,13 +334,13 @@ p_tot := (fabs(swtch) < 0.001)
               : ( (fabs(swtch-2) < 0.001)
                   ? p_totNADH
                   : 0 ) )
-E_1 := (fabs(swtch) < 0.001)
-        ? E1TMPD
-        : ( (fabs(swtch-1) < 0.001)
-            ? E1succ
-            : ( (fabs(swtch-2) < 0.001)
-                ? E1NADH
-                : 0 ) )
+E_1 = (fabs(swtch) < 0.001)
+       ? E1TMPD
+       : ( (fabs(swtch-1) < 0.001)
+           ? E1succ
+           : ( (fabs(swtch-2) < 0.001)
+               ? E1NADH
+               : 0 ) )
 E_1n := (fabs(swtch) < 0.001)
          ? E1TMPD_n
          : ( (fabs(swtch-1) < 0.001)
@@ -348,13 +348,13 @@ E_1n := (fabs(swtch) < 0.001)
              : ( (fabs(swtch-2) < 0.001)
                  ? E1NADH_n
                  : 0 ) )
-k10 := (fabs(swtch) < 0.001)
-        ? k1_n
-        : ( (fabs(swtch-1) < 0.001)
-            ? k1_n*UQH2/UQH2n
-            : ( (fabs(swtch-2) < 0.001)
-                ? k1_n*NADH/NADHn
-                : 0 ) )
+k10 = (fabs(swtch) < 0.001)
+       ? k1_n
+       : ( (fabs(swtch-1) < 0.001)
+           ? k1_n*UQH2/UQH2n
+           : ( (fabs(swtch-2) < 0.001)
+               ? k1_n*NADH/NADHn
+               : 0 ) )
 
 # clustering tags -- these have no effect on the model, but can be used by
 # the compiler when generating a dependency graph of the model

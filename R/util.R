@@ -103,6 +103,10 @@ heat_cross <- function ( dat=read.table("aggregate.txt", header=TRUE),
                          # (probably only makes sense if normalising)
                          gamma=1,
                          
+                         # order the results data?
+                         # recognised values are "max" or "mean" (sort is descending)
+                         sort.order=NULL,
+                         
                          # other values to pass through to plotting functions
                          # note that using this may throw up all kinds of warnings
                          ... )
@@ -162,6 +166,27 @@ heat_cross <- function ( dat=read.table("aggregate.txt", header=TRUE),
 		maxes <- maxes[maxes != 0]	
 	}
 	
+	if ( ! is.null(sort.order) )
+	{
+		if ( sort.order=="max" )
+		{
+			ordering = order(maxes, decreasing=TRUE)
+		}
+		else if ( sort.order=="mean" )
+		{
+			ordering = order(means, decreasing=TRUE)			
+		}
+		else
+		{
+			ordering = 1:length(maxes)
+		}
+		
+		result <- result[, ordering]
+		means <- means[ordering]
+		col_levels <- col_levels[ordering]
+		maxes <- maxes[ordering]
+	}
+	
 	x <- 0:(length(maxes)-1)/(length(maxes)-1)
 	
 	if ( plot )
@@ -184,7 +209,7 @@ heat_cross <- function ( dat=read.table("aggregate.txt", header=TRUE),
 	if ( intermediates )
 	{
 		invisible(list(map=result, data=dat, rows=row_levels,
-					   cols=col_levels, field=field, x=x, mean=means, max=maxes))
+					   cols=col_levels, field=field, x=x, mean=means, max=maxes, sort.order=sort.order))
 	}
 	else
 	{

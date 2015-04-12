@@ -61,3 +61,8 @@ alias: t, t
 # default is 1000 time units
 # in this case we don't want any since the target data was generated without
 steady: 0
+
+# if times aren't provided in the input file, we can instruct
+# optim to generate time steps automatically at a given interval, such as 1 s
+# this isn't required in this case, but it's OK to include it anyway
+timestep: 1

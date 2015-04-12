@@ -49,6 +49,10 @@ NADH = NADpool/(1+NADNADHrat)
 p1 = p_tot - p23
 p_totNADH = p_C1 + p_C3 + p23
 
+E_1 = E1NADH
+k10 = k1_n*NADH/NADHn
+NADNADHrat = NADNADHratn/pow(u, 2*D_NADH)
+
 # initial values of root variables are all their 'normal' values
 a := a_n
 bred := bred_n
@@ -99,7 +103,6 @@ L_lkn := L_n*L_lkfrac
 
 NADHn := NADpool/(1+NADNADHratn)
 NADNADHratn := 9
-NADNADHrat := NADNADHratn/pow(u, 2*D_NADH)
 NADpool := 3
 O2 := 0.024
 O2_n := 0.024
@@ -116,9 +119,7 @@ Vol_mit := 0.067
 Z := 59.028
 
 p_tot := p_totNADH
-E_1 := E1NADH
 E_1n := E1NADH_n
-k10 := k1_n*NADH/NADHn
 
 # clustering tags - these identify symbols that belong within different submodels
 # and can be used to cluster these together when graphing dependencies

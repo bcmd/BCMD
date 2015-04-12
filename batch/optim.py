@@ -42,7 +42,8 @@ CONFIG = { 'build': BUILD,
            'nbatch': 1,            # we don't support parallel execution at present
            'beta': 1,              # ditto
            'param_select': PARAM_SELECT,
-           'weights': {} }     
+           'weights': {},
+           'timestep': None }     
 
 # process command-line arguments
 def process_args():
@@ -192,8 +193,15 @@ def process_inputs(config):
     config['work'] = workdir
     config['info'] = os.path.join(workdir, config['info'])
     
+    if 'timestep' in job['header']:
+        config['timestep'] = float(job['header']['timestep'][0][0])
+    
     if tname not in timedata:
-        raise Exception("time step field '%s' not present in data file" % tname)
+        if config['timestep']:
+            stepcount = len(timedata[timedata.keys()[0]])
+            timedata[tname] = np.array(range(stepcount)) * config['timestep']
+        else:
+            raise Exception("time step field '%s' not present in data file" % tname)
     
     config['times'] = timedata[tname]
     config['vars'] = process_vars(vars, aliases, timedata)
@@ -219,7 +227,7 @@ def process_inputs(config):
     config['steady'] = float(job['header'].get('steady', [[STEADY]])[0][0])
     config['max_iter'] = int(job['header'].get('max_iter', [[MAX_ITER]])[0][0])
     
-    weights = job['header'].get('weight')
+    weights = job['header'].get('weight', {})
     for weight in weights:
         config['weights'][weight[0]] = float(weight[1])
     
