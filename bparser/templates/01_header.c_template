@@ -107,3 +107,5 @@ const unsigned int SPEC_ALLOC_SIZE = 10;
 /* For the moment this is just a constant, may make definable later. */
 const double DEFAULT_DURATION = 1000.0;
 
+/* Skip model execution and dump symbols instead? This may get set by a command line arg. */
+static int DUMP_SYMBOLS = 0;

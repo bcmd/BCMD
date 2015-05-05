@@ -88,7 +88,8 @@ def process(merged, sources, independent='t'):
 
     # assess whether a symbol depends on Y changes (made by solver)
     # only parameter updates (specified by user)
-    rootset = set(work['roots'])
+    rootset = set(work['roots'] + [work['symlist'][0]])
+    
     for name in work['symbols']:
         if name in work['roots']:
             pass
@@ -102,11 +103,11 @@ def process(merged, sources, independent='t'):
     finalise_outputs(work)
     finalise_externs(work)
     
-    for name in set( work['roots'] + work['outputs'] ):
+    for name in rootset.union(work['outputs']):
         work['required'].add(name)
         work['required'] = work['required'] | work['symbols'][name]['depends']
     
-    work['unused'] = set(work['symbols'].keys()) - work['required'] - set(work['roots'])
+    work['unused'] = set(work['symbols'].keys()) - work['required']
     
     work['known'] = work['functions'] & STD_FUNCS
     work['unknown'] = work['functions'] - STD_FUNCS
@@ -207,6 +208,7 @@ def sort_assignments(work):
             # whether there's any runtime assignment to do
             # - now correct any earlier misapprehensions...
             if name in work['intermeds']:
+                logger.message('reclassifying symbol %s as parameter' % name)
                 work['intermeds'].remove(name)
                 if name not in work['params']:
                     work['params'].append(name)

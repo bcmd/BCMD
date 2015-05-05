@@ -212,7 +212,7 @@ def printIntermeds(file, model, config):
     printVars(sorted(model['intermeds'], key=lambda s: s.lower()), 'intermediate variables', file, model, config)
 
 def printParameters(file, model, config):
-    printVars(sorted(model['params'], key=lambda s: s.lower()), 'parameters', file, model, config, omit_expr=True)
+    printVars(sorted(model['params'], key=lambda s: s.lower()), 'parameters', file, model, config)
 
 def printVars(vars, title, file, model, config, omit_expr=False):
     if vars:
@@ -245,6 +245,7 @@ def printVar(name, file, model, config, omit_expr=False):
     if tags:
         print >> file, '## + %s' % tags
 
+    noninits = []
     if not omit_expr:
         noninits = [x for x in sym['assigns'] if not x['init']]
         if noninits:
@@ -254,9 +255,14 @@ def printVar(name, file, model, config, omit_expr=False):
     inits = [x for x in sym['assigns'] if x['init']]
     if inits:
         init = substitute(inits[0], model, config)
+    elif noninits:
+        # skip the default initialiser if there is already an assignment
+        init = None
     else:
         init = '0'
-    print >> file, '%s := %s' % (name, init)
+    
+    if init is not None:
+        print >> file, '%s := %s' % (name, init)
     
     for constraint in sym['constraints']:
         # at present the compiler doesn't store a mathexpr for constraints, so use the old expr stuff

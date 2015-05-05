@@ -7,13 +7,21 @@ import pprint
 import distance
 import inputs
 
+# sensitivity analyses
+import SALib.analyze.morris
+import SALib.analyze.fast
+
+from numpy import nan
+from numpy import array
+
 # filenames
 INFO='dsim.info'
 BRIEF='brief.txt'
 RESULTS='results.txt'
 DISTANCES='distances.txt'
-ELEMENTARIES='elementaries.txt'
+SENSITIVITIES='SA.txt'
 MEASURED='measured.txt'
+JOBS='jobs.txt'
 
 # notable headers
 T0 = 't0'
@@ -30,6 +38,10 @@ INF = float('Inf')
 NAN = float('nan')
 ALL_NAN = ['nan'] * len(DIST_HEADS)
 ALL_INF = [INF] * len(DIST_HEADS)
+
+# substitution policy
+# TODO: make this configurable
+SUBSTITUTE = 0
 
 THRESH = 1e-10
 
@@ -74,15 +86,21 @@ def writeBrief(dir, info):
             # add any other info as desired here
 
 def getConfig(info):
-    # for the moment, config consists only of target and measured fields
     target = [ x['name'] for x in info['vars'] ]
     measured = [ x + OUT_SUFFIX for x in target ]
-    return { 'target':target, 'measured':measured }
+    return { 'target':target,
+             'measured':measured,
+             'info':info,
+             'substitute':SUBSTITUTE }
 
 def calcDistances(dir, config):
+    
+    distance.SUBSTITUTE = config['substitute']
+    
     resultsfile = os.path.join(dir, RESULTS)
     distancesfile = os.path.join(dir, DISTANCES)
-    elemsFile = os.path.join(dir, ELEMENTARIES)
+    saFile = os.path.join(dir, SENSITIVITIES)
+    jobsFile = os.path.join(dir, JOBS)
     
     if os.path.isfile(resultsfile):
         # set up a bunch of stuff we'll need
@@ -99,20 +117,19 @@ def calcDistances(dir, config):
         # in defaults until later, when we know how long the result traces are...
         measured = getMeasured(dir, config)
         
-        # previous rows, for checking stepwise changes
-        prevRow = {}
-        for name in config['target']: prevRow[name] = None
+        # assume that all species are run with the same list of jobs
+        # and we'll use those for the first target
+        jobs = []
+        params = None
         
-        # previous distances, for ditto -- prefilling is probably unnecessary here, but for clarity
-        prevDists = {}
-        for name in config['target']: prevDists[name] = None
-
-        # elementary effects for each target
-        elementaries = {}
-        for name in config['target']: elementaries[name] = {}
+        distances = {}
+        for species in config['target']:
+            distances[species] = {}
+            for dist in DIST_HEADS:
+                distances[species][dist] = []
         
-        # ok, let's proceed
-        with open(resultsfile) as results, open(distancesfile, 'w') as distances:
+        # calculate and write out distances for all jobs (species will be interleaved, as in the original results)
+        with open(resultsfile) as results, open(distancesfile, 'w') as distOut:
             
             for line in results:
                 row = line.strip().split('\t')
@@ -122,8 +139,9 @@ def calcDistances(dir, config):
                     header = row
                     speciesIndex = row.index(SPECIES)
                     t0Index = row.index(T0)
+                    params = row[(speciesIndex+1):t0Index]
                     
-                    print >> distances, '\t'.join(row[:t0Index] + DIST_HEADS)
+                    print >> distOut, '\t'.join(row[:t0Index] + DIST_HEADS)
                     
                     # add a default zero array for all measured, in case they're not provided
                     UNMEASURED = numpy.zeros(len(row[t0Index:]))
@@ -154,82 +172,57 @@ def calcDistances(dir, config):
                     # simulation data -- calculate distances and write out
                     elif species in config['target']:
                     
-                        # distances are not defined for traces containing NaNs
-                        if 'nan' in row:
-                            print >> distances, '\t'.join(row[:t0Index] + ALL_NAN)
-                            dists = ALL_INF
-                        else:
-                            simdata = numpy.array([float(x) for x in row[t0Index:]])
-                            dists = [ df(measured[species], simdata) for df in DIST_FUNCS ]
-                            print >> distances, '\t'.join(row[:t0Index] + [str(d) for d in dists])
-                    
-                        # map parameter changes to distance changes
-                        if prevRow[species] is None:
-                            prevRow[species] = numpy.array([float(x) for x in row[(speciesIndex + 1):t0Index]])
-                            prevDists[species] = dists
-                        else:
-                            currRow = numpy.array([float(x) for x in row[(speciesIndex + 1):t0Index]])
-                            diffs = [ abs(x) > THRESH for x in (currRow - prevRow[species]) ]
-                            
-                            # each Morris trajectory changes one param at a time
-                            # multiple changes indicate the start of a new trajectory, so we do not
-                            # calculate elementaries in that case
-                            # (we are duplicating some effort here, since all species will start a new trajectory
-                            # at the same time, but avoiding that would be far more trouble than its worth...)
-                            if diffs.count(True) == 1:
-                                changed = header[diffs.index(True) + speciesIndex + 1]
-                                distChanges = [ prevDists[species][ii] - dists[ii] for ii in range(len(dists))]
-                                
-                                if changed in elementaries[species]:
-                                    elems = elementaries[species][changed]
-                                    for ii in range(len(DIST_HEADS)):
-                                        elems[DIST_HEADS[ii]].append(distChanges[ii])
-                                else:
-                                    elems = {}
-                                    for ii in range(len(DIST_HEADS)):
-                                        elems[DIST_HEADS[ii]] = [distChanges[ii]]
-                                    elementaries[species][changed] = elems
+                        # extract the job details (first species only)
+                        if species==config['target'][0]:
+                            jobs.append(numpy.array([float(x) for x in row[(speciesIndex+1):t0Index]]))
                         
-                            prevRow[species] = currRow
-                            prevDists[species] = dists
+                        # calculate the range of distance metrics between this sim and the measured data
+                        simdata = numpy.array([float(x) for x in row[t0Index:]])
+                        dists = [ df(measured[species], simdata) for df in DIST_FUNCS ]
+                        print >> distOut, '\t'.join(row[:t0Index] + [str(d) for d in dists])
+                        
+                        # save as vectors per metric per species, for possible use as a sensitivity Y
+                        for ii in range(len(dists)):
+                            distances[species][DIST_HEADS[ii]].append(dists[ii])
         
-        for species in config['target']:
-            for elem in elementaries[species]:
-                dists = elementaries[species][elem]
-                mu = {}
-                mu_star = {}
-                sigma = {}
-                Nmax = 0
-                for head in DIST_HEADS:
-                    vals = (numpy.array(dists[head]))
-                    finvals = vals[numpy.isfinite(vals)]
-                    N = len(finvals)
-                    if N > 0:
-                        mu[head] = numpy.mean(finvals)
-                        mu_star[head] = numpy.mean(numpy.abs(finvals))
-                        sigma[head] = numpy.std(finvals)
-                        Nmax = max(Nmax, N)
-                    else:
-                        mu[head] = NAN
-                        mu_star[head] = NAN
-                        sigma[head] = NAN
-                dists['mu'] = mu
-                dists['mu_star'] = mu_star
-                dists['sigma'] = sigma
-                dists['N'] = Nmax
+        # write the jobs list
+        with open(jobsFile, 'w') as jf:
+            print >> jf, '\t'.join(params)
+            for job in jobs:
+                print >> jf, '\t'.join([str(x) for x in job])
         
-        with open(elemsFile, 'w') as f:
-            print >> f, '\t'.join(['Species', 'Param', 'N'] + [ x + '_' + y for x in DIST_HEADS for y in ['mu', 'mu_star', 'sigma']])
-            for species in config['target']:
-                for name in elementaries[species]:
-                    row = [species, name]
-                    dicts = elementaries[species][name]
-                    row.append(str(dicts['N']))
-                    for head in DIST_HEADS:
-                        row.append(str(dicts['mu'][head]))
-                        row.append(str(dicts['mu_star'][head]))
-                        row.append(str(dicts['sigma'][head]))
-                    print >> f, '\t'.join(row)
+        # calculate and write sensitivities according to job type
+        if config['info']['job_mode'] == 'morris':
+            fields = ['mu', 'mu_star', 'sigma', 'mu_star_conf']
+            with open(saFile, 'w') as sf:
+                print >> sf, '\t'.join(['Species', 'Metric', 'Param'] + fields)
+                
+                for species in config['target']:
+                    for dist in DIST_HEADS:
+                        Y = numpy.array(distances[species][dist])
+                        sens = SALib.analyze.morris.analyze(config['info']['problem'],
+                                                            jobs,
+                                                            Y,
+                                                            num_levels=config['info']['divisions'],
+                                                            print_to_console=True,
+                                                            grid_jump=config['info']['jump'])
+                        for ii in range(len(params)):
+                            print >> sf, '\t'.join([species, dist, params[ii]] + [str(sens[x][ii]) for x in fields])
+        
+        elif config['info']['job_mode'] == 'fast':
+            fields = ['S1', 'ST']
+            with open(saFile, 'w') as sf:
+                print >> sf, '\t'.join(['Species', 'Metric', 'Param'] + fields)
+                
+                for species in config['target']:
+                    for dist in DIST_HEADS:
+                        Y = numpy.array(distances[species][dist])
+                        sens = SALib.analyze.fast.analyze(config['info']['problem'],
+                                                          Y,
+                                                          config['info']['interference'],
+                                                          print_to_console=True)
+                        for ii in range(len(params)):
+                            print >> sf, '\t'.join([species, dist, params[ii]] + [str(sens[x][ii]) for x in fields])        
 
 def printUsage():
     print 'Usage: ' + sys.argv[0] + ' DIR'

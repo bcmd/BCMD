@@ -305,3 +305,26 @@ best_fit <- function ( best_fit=NULL, intermediates=TRUE, plot=TRUE, dist.fields
 		invisible(best)
 	}
 }
+
+# quick hack to run through two model parameter dumps and spot differences
+param.compare <- function ( p1, p2 )
+{
+	result <- NULL
+	for ( ii in 1:length(p1[,1]) )
+	{
+		name <- p1[ii,1]
+		jj <- which(p2[,1] == name)
+		if (length(jj) > 0)
+		{
+			jj <- jj[1]
+			if ( p1[ii,2] != p2[jj,2] )
+			{
+				result <- rbind(result, data.frame(name=name, p1=p1[ii,2], p2=p2[jj,2], stringsAsFactors=FALSE))
+			}
+		}
+	}
+	
+	result <- result[order(result[,1]),]
+	
+	return(result)
+}

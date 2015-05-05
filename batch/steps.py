@@ -616,10 +616,16 @@ def abcAbsoluteSequence ( times, abcInputs, abcOutputs, start=None, outhead=True
 if __name__ == '__main__':
     import pprint
     
-    combo, sources = readFiles(sys.argv[1:], sys.stderr)
+    if sys.argv[1] == '-d':
+        dump_tree = True
+        combo, sources = readFiles(sys.argv[2:], sys.stderr)
+    else:
+        combo, sources = readFiles(sys.argv[1:], sys.stderr)
+        dump_tree = False
     
     if combo:
         print >> sys.stderr, '%d steps' % sum([s['n'] for s in combo])
-        print >> sys.stderr, '\n------\n\n' + pprint.pformat(combo)
+        if dump_tree:
+            print >> sys.stderr, '\n------\n\n' + pprint.pformat(combo)
         print >> sys.stderr, '\n------\nPrinting sequence to stdout'
         writeSequence(combo, comment='from: ' + ', '.join(sources))

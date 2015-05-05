@@ -1,0 +1,42 @@
+# basic sensitivity job for testing and demonstration purposes
+# we use a simple RC-circuit model, and data simulated from the model itself
+# (simulation input file: examples/rc_target.input)
+model: rc
+
+# variable to simulate, with a default start value of 0
+var: Vc, constant, 0
+
+# distribution ranges for the two parameters
+# (note that the effects of both are strongly non-uniform)
+param: C, uniform, 1e-6, 100
+param: R, uniform, 1, 10000
+
+# for sensitivity we currently implement 'morris' and 'fast'
+job_mode: fast
+
+# distance metric (this is the default)
+distance: euclidean
+
+# we only have the one input
+input: V
+
+# use an alias for t to specify the t variable, if not using the default ' t'
+# in particular, you might need to alias t to itself
+# if explicitly including it by that name in a CSV
+alias: t, t
+
+# number of parameter levels (morris, default 10)
+divisions: 10
+
+# interference or M factor (FAST, default 4)
+interference: 4
+
+# number of trajectories (for morris) or sample points per param (fast) (default 10)
+npath: 1000
+
+# jump size (for morris, default 4)
+jump: 4
+
+# number of parallel sims (default 1)
+nbatch: 8
+

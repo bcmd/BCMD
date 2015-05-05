@@ -30,7 +30,8 @@
 		<string>param_select</string>
 		<string>divisions</string>
 		<string>npath</string>
-		<string>path_start</string>
+		<string>jump</string>
+		<string>interference</string>
 		<string>save_interval</string>
 		<string>program</string>
 		<string>model_io</string>
@@ -40,7 +41,11 @@
 		<string>max_iter</string>
 		<string>steady</string>
 		<string>weight</string>
+		<string>post</string>
 		<string>timestep</string>
+		<string>substitute</string>
+		<string>delta</string>
+		<string>sigma</string>
 	</array>
 	<key>BBLMPredefinedNameList</key>
 	<array>
@@ -50,8 +55,10 @@
 		<string>lognormal</string>
 		<string>single</string>
 		<string>morris</string>
+		<string>fast</string>
 		<string>pairwise</string>
 		<string>cartesian</string>
+		<string>hessian</string>
 		<string>default</string>
 		<string>random</string>
 		<string>GLP</string>
@@ -67,6 +74,13 @@
 		<string>loglik</string>
 		<string>mean</string>
 		<string>angular</string>
+		<string>relative</string>
+		<string>absolute</string>
+		<string>zero</string>
+		<string>centre</string>
+		<string>norm</string>
+		<string>offset</string>
+		<string>scale</string>
 	</array>
 	<key>BBLMLanguageCode</key>
 	<string>Bjob</string>

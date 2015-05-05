@@ -16,6 +16,7 @@ import model_bcmd
 import steps
 import distance
 import inputs
+import posthoc
 
 # add location of pswarm_py.so to search path
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(os.path.abspath(__file__)), 'pylib')))
@@ -43,7 +44,8 @@ CONFIG = { 'build': BUILD,
            'beta': 1,              # ditto
            'param_select': PARAM_SELECT,
            'weights': {},
-           'timestep': None }     
+           'timestep': None,
+           'sigma': None }     
 
 # process command-line arguments
 def process_args():
@@ -91,7 +93,7 @@ def process_vars(vars, aliases, data):
         else:
             names.append(name)
         
-        var = { 'name': name }
+        var = { 'name': name, 'post': [] }
         
         if name in aliases:
             dataname = aliases[name]
@@ -131,7 +133,7 @@ def process_vars(vars, aliases, data):
                 
         result.append(var)
     
-    return result
+    return result, names
 
 # get job details from input files
 def process_inputs(config):
@@ -204,8 +206,8 @@ def process_inputs(config):
             raise Exception("time step field '%s' not present in data file" % tname)
     
     config['times'] = timedata[tname]
-    config['vars'] = process_vars(vars, aliases, timedata)
-    config['params'] = process_vars(params, aliases, timedata)
+    config['vars'], varnames = process_vars(vars, aliases, timedata)
+    config['params'], pnames = process_vars(params, aliases, timedata)
     config['param_unselect'] = []
     
     if param_select != PARAM_SELECT:
@@ -217,7 +219,7 @@ def process_inputs(config):
             else:
                 config['param_unselect'].append(param)
     
-    config['inputs'] = process_vars(ins, aliases, timedata)
+    config['inputs'], innames = process_vars(ins, aliases, timedata)
     
     config['baseSeq'], dummy = steps.readFiles(job['header'].get('init', [[]])[0])
     
@@ -227,13 +229,27 @@ def process_inputs(config):
     config['steady'] = float(job['header'].get('steady', [[STEADY]])[0][0])
     config['max_iter'] = int(job['header'].get('max_iter', [[MAX_ITER]])[0][0])
     
-    weights = job['header'].get('weight', {})
+    if 'sigma' in job['header']:
+        config['sigma'] = float(job['header']['sigma'][0][0])
+    
+    weights = job['header'].get('weight', [])
     for weight in weights:
         config['weights'][weight[0]] = float(weight[1])
     
+    # record any posthoc transformations for optimisation variables
+    posts = job['header'].get('post', [])
+    for post in posts:
+        if post[0] in varnames:
+            ff = posthoc.get(post[1:])
+            if ff is not None:
+                config['vars'][varnames.index(post[0])]['post'].append(ff)
+    
     # for the moment the only supported distance functions are in the distance module
     # if that's ever not the case this could be a bit trickier...
-    config['distance'] = getattr(distance, job['header'].get('distance', [[DISTANCE]])[0][0])
+    if config['sigma'] is not None and job['header'].get('distance', [[DISTANCE]])[0][0] == 'loglik':
+        config['distance'] = distance.loglikWithSigma(config['sigma'])
+    else:
+        config['distance'] = getattr(distance, job['header'].get('distance', [[DISTANCE]])[0][0])
 
     return config
 
@@ -256,7 +272,7 @@ def make_model(config):
                                    steady=config['steady'])
     return model
 
-# create optimiser -- only GLP supported so far
+# create optimiser
 def make_optimiser(config, model):
     if not model: return None
     

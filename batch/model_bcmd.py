@@ -206,10 +206,15 @@ class model_bcmd:
                                       do_perturb=False )
                 tot = 0
                 for ii in range(len(self.vars)):
-                    dd = dist(sim[0,0,:,ii], self.vars[ii].get('points',0))
+                    target = self.vars[ii].get('points',0)
+                    signal = sim[0,0,:,ii]
+                    for post in self.vars[ii]['post']:
+                        signal = post(signal)
+                    
+                    dd = dist(signal, target)
                     
                     if self.debug:
-                        print >> sys.stderr, 'distance due to %s (%f): %f' % (self.pnames[ii], p[ii], dd)
+                        print >> sys.stderr, 'distance due to %s: %f' % (self.vnames[ii], dd)
                 
                     if weights and len(weights) > ii:
                         tot += weights[ii] * dd

@@ -3,9 +3,9 @@
 import os, os.path, sys
 import subprocess
 
-IN_DIR = '../data/bs_sim/worse_in'
-OUT_DIR = '../data/bs_sim/worse_out'
-MODEL = '../build/bsrf_BS.model'
+IN_DIR = '../../text/tracy/files/bcmd'
+OUT_DIR = '../../text/tracy/files/bcmd_out'
+MODEL = '../build/brainpiglet2-0.model'
 
 infiles = os.listdir(IN_DIR)
 

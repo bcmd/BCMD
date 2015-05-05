@@ -100,6 +100,11 @@ def logModelInfo(model, config):
         logger.message('\nThe following symbols are parameters, independent of the solver variables:')
         for name in sorted(model['params'], key=str.lower):
             logger.message(name)
+        
+        logger.message('\nThe following parameters have no dependencies at all:')
+        for name in sorted(model['params'], key=str.lower):
+            if len(model['symbols'][name]['depends']) == 0:
+                logger.message(name)
     
     if model['intermeds']:
         logger.message('\nThe following symbols are intermediates, with solver variable dependencies:')
@@ -208,6 +213,11 @@ def modelInfo(model, config):
         result += '\nThe following symbols are parameters, independent of the solver variables:\n'
         for name in sorted(model['params'], key=str.lower):
             result += name + '\n'
+
+        result += '\nThe following parameters have no dependencies at all:\n'
+        for name in sorted(model['params'], key=str.lower):
+            if len(model['symbols'][name]['depends']) == 0:
+                result += name + '\n'
     
     if model['intermeds']:
         result += '\nThe following symbols are intermediates, with solver variable dependencies:\n'

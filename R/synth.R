@@ -105,13 +105,24 @@ signals <- function ( tt=TT, lo=0, hi=1 )
 	invisible(result)
 }
 
+# signal sets for some vaguely useful parameter ranges
+pa.bs.good <- signals(TT, lo=80, hi=100)
+pa.bs.bad <- signals(TT, lo=40, hi=150)
+pa.pre.good <- signals(TT, lo=20, hi=40)
+pa.pre.bad <- signals(TT, lo=8, hi=70)
+pa.term.good <- signals(TT, lo=35, hi=55)
+pa.term.bad <- signals(TT, lo=10, hi=80)
+
+co2.good <- signals(TT, lo=37, hi=45)
+co2.bad <- signals(TT, lo=30, hi=50)
+o2.good <- signals(TT, lo=0.9, hi=1)
+o2.bad <- signals(TT, lo=0.6, hi=1)
+
 # function generating data frames of input values for combos of input signals
 # defaults to standard BrainSignals inputs over "reasonable" ranges
 # (this produces a lot of combos, many uninteresting -- may want to reduce this)
 combos <- function ( tt=TT,
-					 fields=list(SaO2sup=signals(tt, lo=0.9, hi=1),
-								 Pa_CO2=signals(tt, lo=37, hi=45),
-								 P_a=signals(tt, lo=80, hi=100)) )
+					 fields=list(SaO2sup=o2.good, Pa_CO2=co2.good, P_a=pa.bs.good) )
 {
 	keys <- names(fields)
 	

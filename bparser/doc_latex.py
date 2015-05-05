@@ -27,7 +27,7 @@ def writeDoc(model, config):
 def printHeader(file, model, config):   
     with open(HEADER) as src:
         for line in src:
-            file.write(line.replace('__NAME__', config['name']))
+            file.write(line.replace('__NAME__', config['name'].replace('_', '\\_')))
 
 def printFooter(file, model, config):
     with open(FOOTER) as src:

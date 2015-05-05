@@ -1,0 +1,42 @@
+# basic optimisation job for testing and demonstration purposes
+# we use a simple RC-circuit model, and data simulated from the model itself
+# (simulation input file: examples/rc_target.input)
+model: rc
+
+# we wish to simulate the capacitor voltage and use it to estimate the capacitance
+# (for the time being we will assume that the resistor value is known)
+
+# variable to simulate, with a default start value of 0
+var: Vc, constant, 0
+
+# the 'known' resistance value -- in fact this is wrong by a few ohms
+param: R, constant, 1000
+
+# this distribution defines the acceptable range of capacitance values
+# (beware of the 100F capacitor!)
+param: C, normal, 1e-6, 100
+
+# number of particles to try
+particles: 8
+
+# number of repeat trials to run for each param draw -- since we perturb the inputs the trials are non-deterministic
+beta: 10
+
+# number of sims to run in parallel
+nbatch: 8
+
+# automatic epsilon schedule
+finalepsilon: 1.5
+alpha: 0.75
+
+# for the moment, only the capacitance may vary
+param_select: C
+
+# inputs -- can have perturbation distribs, but they are ignored
+input: V
+
+# use an alias for t to specify the t variable, if not using the default ' t'
+# in particular, you might need to alias t to itself
+# if explicitly including it by that name in a CSV
+alias: t, t
+

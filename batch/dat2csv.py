@@ -30,7 +30,16 @@ def dat2csv(name):
 
 if __name__ == '__main__':
     for name in sys.argv[1:]:
-        if name.lower().endswith('.dat'):
+        if os.path.isdir(name):
+            files = [os.path.join(name,nn) for nn in os.listdir(name)]
+            for ff in files:
+                if ff.lower().endswith('.dat'):
+                    print 'attempting to convert %s' % ff
+                    try:
+                        dat2csv(ff)
+                    except Exception as e:
+                        print e
+        elif name.lower().endswith('.dat'):
             try:
                 dat2csv(name)
             except Exception as e:

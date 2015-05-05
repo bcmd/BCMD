@@ -1,0 +1,40 @@
+# mix-in module for bp20
+# this defines time-based changes, modelling insult and putative consequences
+# defaults are such that these should never be invoked unless overridden in input file
+
+@output rocc df k_unc
+
+insult_start := 1e8
+insult_end := 2e8
+insult_nadir := 1.5e8
+insult_transition := 60
+final_occ := 0
+
+cell_death := 0
+death_transition := 60
+
+final_unc := 1.0
+uncoupling_transition := 60
+
+rocc = t < insult_start
+       ? 0
+       : ( t < insult_start + insult_transition
+         ? (t - insult_start)/insult_transition
+         : ( t < insult_end
+           ? 1
+           : ( t < insult_end + insult_transition
+             ? final_occ + (1 - final_occ) * (insult_end + insult_transition - t)/insult_transition
+             : final_occ ) ) )
+
+df = t < insult_nadir
+     ? 0
+     : ( t < insult_nadir + death_transition
+       ? cell_death * (t - insult_nadir)/death_transition
+       : cell_death )
+
+k_unc = t < insult_nadir
+        ? 1
+        : ( t < insult_nadir + uncoupling_transition
+          ? 1 + (final_unc - 1) * (insult_end + uncoupling_transition - t)/uncoupling_transition
+          : final_unc )
+

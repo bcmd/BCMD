@@ -1,22 +1,14 @@
-# in the absence of explicit other settings (TBD), various details are concocted from the model name
-# including program & workdir
 model: BS
 
-# all distribs default to (constant, 0) if not given 
-
 # vars to be simulated, with distrib of initial conditions
-var: Vmca, constant, 0.01075
-var: CCO, constant, 0
+var: Vmca, uniform, 0.010, 0.011
+var: CCO, uniform, 0, 0.00001
 
 # optional external file specifying param distributions
-# (explicit param lines can override this on an individual basis)
 param_file: ../examples/bsrf/pdists_BS.csv
 
-# job mode specifies how multiple varying parameters are combined
-# should be one of: single, pairwise, cartesian or (TODO) morris
-# default is single
-# (cartesian should only be used with small numbers of params!)
-job_mode: morris
+# Morris or FAST?
+job_mode: fast
 
 # param_select specifies which params to vary
 # may specify an explicit (comma-separated) list
@@ -29,9 +21,6 @@ input: SaO2sup, normal, 0, 0.00001
 input: P_a, normal, 0, 3
 input: Pa_CO2, normal, 0, 8
 
-# alias maps a var or param name to the corresponding header in the data file
-#alias: Vmca, TCD.mean.velocity
-
 # use an alias for t to specify the t variable, if not using the default ' t'
 # in particular, you might need to alias t to itself
 # if explicitly including it by that name in a CSV
@@ -40,17 +29,15 @@ alias: t, t
 # the number of distinct levels (potentially) tested per parameter
 divisions: 10
 
-# periodically save intermediate results after this many jobs (default 100)
-# set to 0 for no intermediate saves
-#save_interval: 0
-
-# the number of paths to run (only relevant for Morris sampling)
-npath: 50
-
-# where to start each trajectory:
-# random = a completely random point in the search sequence
-# default = start at default value for params (or nearest point on search grid)
-path_start: random
+# Morris paths or FAST samples
+npath: 1000
 
 # number of sims to run in parallel
 nbatch: 8
+
+# in order to ensure that results are comparable, we can substitute
+# infinite & NaN values with a real number
+# we can choose to impose a high distance penalty, or disregard
+# (either way is frankly dubious, but...)
+substitute: 0
+

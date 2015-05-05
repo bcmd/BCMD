@@ -12,6 +12,14 @@ import os, os.path, sys
 import time, datetime
 import argparse, pprint
 
+# we now delegate sensitivity analysis to an external library
+# initially still only supporting Morris, but this will soon change...
+# TODO: add support for eFAST, maybe others
+import SALib.sample.morris
+import SALib.analyze.morris
+import SALib.sample.fast_sampler
+import SALib.analyze.fast
+
 # local BCMD-related modules
 import model_bcmd
 import steps
@@ -19,7 +27,7 @@ import distance
 import inputs
 
 # environment
-VERSION = 0.5
+VERSION = 0.6
 HERE = os.path.dirname(os.path.abspath(__file__))
 BUILD = os.path.abspath(os.path.relpath('../build', HERE))
 INFO = 'dsim.info'
@@ -31,8 +39,14 @@ BETA = 1
 JOB_MODE = 'single'
 PARAM_SELECT = '*'
 NPATH = 10
-PATH_START = 'random'
+JUMP = 4
+INTERFERENCE = 4
 SAVE_INTERVAL = 100
+DISTANCE = 'euclidean'
+DELTA = 1e-6
+
+# suppress stray floating point warnings
+np.seterr(all='ignore')
 
 CONFIG = { 'build': BUILD,
            'work': None,
@@ -44,8 +58,12 @@ CONFIG = { 'build': BUILD,
            'beta': BETA,
            'param_select': PARAM_SELECT,
            'save_interval': SAVE_INTERVAL,
-           'path_start': PATH_START,
-           'timeout': model_bcmd.TIMEOUT }
+           'timeout': model_bcmd.TIMEOUT,
+           'jump': JUMP,
+           'delta': DELTA,
+           'relative_delta': True,
+           'weights' : {},
+           'sigma' : None }
 
 # numpy utility for constructing a cartesian product of arrays
 # by StackOverflow user .pv, answering this question:
@@ -128,6 +146,7 @@ def process_args():
     ap = argparse.ArgumentParser(description="Batch simulation jobs for BCMD models")
     ap.add_argument('--version', action='version', version='dsim version %.1fa' % VERSION)
     ap.add_argument('-r', '--results', help='output file name (default: results.txt)', metavar='FILE', default='results.txt')
+    ap.add_argument('-s', '--sensitivities', help='sensitivities file name (default: sensitivities.txt)', metavar='FILE', default='sensitivities.txt')
     ap.add_argument('-b', '--build', help='build/model directory (default: [BCMD_HOME]/build)', metavar='DIR')
     ap.add_argument('-o', '--outdir', help='work/output directory (default: [BUILD]/[MODEL_NAME]_[TIMESTAMP]', metavar='DIR')
     ap.add_argument('-p', '--perturb', help='enable input perturbation', action='store_true')
@@ -142,6 +161,7 @@ def process_args():
     config['datafile'] = args.datafile
     
     config['outfile'] = args.results
+    config['sensitivities'] = args.sensitivities
     
     if args.build:
         config['build'] = args.build
@@ -178,7 +198,7 @@ def process_vars(vars, aliases, data):
             dataname = name
         
         if dataname in data:
-            var['points'] = data[dataname]
+            var['points'] = np.array(data[dataname])
         
         if len(item) > 1:
             var['dist'] = item[1]
@@ -189,6 +209,8 @@ def process_vars(vars, aliases, data):
                     var['default'] = float(item[4])
                 else:
                     var['default'] = var['value']
+                var['min'] = var['value']
+                var['max'] = var['value']
             elif (item[1] == 'normal' or item[1] == 'lognormal') and len(item) > 2:
                 var['mean'] = float(item[2])
                 if len(item) > 3:
@@ -196,7 +218,7 @@ def process_vars(vars, aliases, data):
                 if len(item) > 4:
                     var['default'] = float(item[4])
                 elif var['dist'] == 'lognormal':
-                    var['default'] = numpy.exp(var['mean'])
+                    var['default'] = np.exp(var['mean'])
                 else:
                     var['default'] = var['mean']
             elif item[1] == 'uniform' and len(item) > 2:
@@ -276,6 +298,7 @@ def process_inputs(config):
     config['model_io'] = job['header'].get('model_io', [[os.path.join(workdir, 'model_io')]])[0][0]
     config['work'] = workdir
     config['outfile'] = os.path.join(workdir, config['outfile'])
+    config['sensitivities'] = os.path.join(workdir, config['sensitivities'])
     config['info'] = os.path.join(workdir, config['info'])
     
     if not os.path.isfile(config['program']):
@@ -302,16 +325,41 @@ def process_inputs(config):
     config['nbatch'] = int(job['header'].get('nbatch', [[NBATCH]])[0][0])
     config['job_mode'] = job['header'].get('job_mode', [[JOB_MODE]])[0][0]
     config['npath'] = int(job['header'].get('npath', [[NPATH]])[0][0])
+    config['jump'] = int(job['header'].get('jump', [[JUMP]])[0][0])
+    config['interference'] = int(job['header'].get('interference', [[INTERFERENCE]])[0][0])
     config['save_interval'] = int(job['header'].get('save_interval', [[SAVE_INTERVAL]])[0][0])
-    config['path_start'] = job['header'].get('path_start', [[PATH_START]])[0][0]
+    config['delta'] = float(job['header'].get('delta', [[DELTA]])[0][0])
+    
+    if 'delta' in job['header'] and len(job['header']['delta'][0]) > 1:
+        config['relative_delta'] = job['header']['delta'][0][1] == 'relative'
     
     config['timeout'] = int(job['header'].get('timeout', [[model_bcmd.TIMEOUT]])[0][0])
+        
+    # hack alert -- option for non-finite distances to be replaced with some real value
+    config['substitute'] = float(job['header'].get('substitute', [[distance.SUBSTITUTE]])[0][0])
+    distance.SUBSTITUTE = config['substitute']
     
     if config['perturb']:
         config['beta'] = int(job['header'].get('beta', [[BETA]])[0][0])
     else:
         # ignore multiple trials in config if not perturbing
         config['beta'] = 1
+    
+    # weight sums over vars for hessian jobs, for optim compatibility
+    weights = job['header'].get('weight', {})
+    for weight in weights:
+        config['weights'][weight[0]] = float(weight[1])
+    
+    if 'sigma' in job['header']:
+        config['sigma'] = float(job['header']['sigma'][0][0])
+    
+    # for the moment the only supported distance functions are in the distance module
+    # if that's ever not the case this could be a bit trickier...
+    if config['sigma'] is not None and job['header'].get('distance', [[DISTANCE]])[0][0] == 'loglik':
+        config['distance'] = distance.loglikWithSigma(config['sigma'])
+        print 'using sigma=%g' % config['sigma']
+    else:
+        config['distance'] = getattr(distance, job['header'].get('distance', [[DISTANCE]])[0][0])
     
     return config
 
@@ -327,6 +375,10 @@ def make_jobs(config):
         result = cartesian(quants)
     elif mode == 'morris':
         result = morris(params, config)
+    elif mode == 'fast':
+        result = fast(params, config)
+    elif mode == 'hessian':
+        result = hessian(params, config)
     elif mode == 'pairwise':
         result = []
         for ii in range(len(params)):
@@ -352,67 +404,69 @@ def make_jobs(config):
     return result
 
 # construct a set of jobs corresponding to Morris trajectories
-# through the parameter space -- note that we don't address the analysis
-# side here, only the job creation
-# for the moment we don't attempt selection from a large population (Campolongo et al 2007)
-# because the number of combinations that must be compared gets very large
+# (this is now deferred to SALib)
 def morris(params, config):
-    levels = [quantiles(p, config['divisions']) for p in params]
-        
-    if ( config['path_start'] == 'default' ):
-        startv = find_default_start(params, levels)
+    # specify problem in form understood by SALib
+    config['problem'] = { 'num_vars': len(params),
+                          'names': [p['name'] for p in params],
+                          'groups': None,
+                          'bounds': [[p.get('min',0), p.get('max',1)] for p in params] }
+    
+    result = SALib.sample.morris.sample(config['problem'],
+                                        config['npath'],
+                                        config['divisions'],
+                                        config['jump'])
+    return result
+
+# construct a set of jobs for eFAST sensitivity analysis (via SALib)
+def fast(params, config):
+    # specify problem in form understood by SALib
+    config['problem'] = { 'num_vars': len(params),
+                          'names': [p['name'] for p in params],
+                          'groups': None,
+                          'bounds': [[p.get('min',0), p.get('max',1)] for p in params] }
+    
+    result = SALib.sample.fast_sampler.sample(config['problem'],
+                                              config['npath'],
+                                              config['interference'])
+    return result
+
+# construct a set of jobs to enable estimation of the Hessian
+def hessian(params, config):
+    if config['relative_delta']:
+        for p in params:
+            p['delta'] = np.max((p['min'], np.min((p['default'] + config['delta'] * (p['max'] - p['min'])))))
+            p['delta2'] = np.max((p['min'], np.min((p['default'] + 2 * config['delta'] * (p['max'] - p['min'])))))
     else:
-        startv = None
+        for p in params:
+            p['delta'] = np.max((p['min'], np.min((p['default'] + config['delta']))))
+            p['delta2'] = np.max((p['min'], np.min((p['default'] + 2 * config['delta'])))) 
     
-    indexed = []
-    for ii in range(config['npath']):
-        indexed.extend(trajectory(len(params), config['divisions'], startv))
+    # zero-order: start point
+    result = [ [p['default'] for p in params] ]
     
-    result = []
-    for idx_job in indexed:
-        job = []
-        for ii in range(len(params)):
-            job.append(levels[ii][idx_job[ii] % len(levels[ii])])
-        result.append(job)
-    
-    return result
-
-# get the indices of the levels closest to each parameter's default value
-# (in order to act as a default trajectory start value)
-def find_default_start(params, levels):
-    result = []
+    # first order: changing a single param
     for ii in range(len(params)):
-        result.append(np.argmin(np.abs(levels[ii] - params[ii]['default'])))
-    return np.array(result)
+        # point changing only this param
+        job = [p['default'] for p in params]
+        job[ii] = params[ii]['delta']
+        result.append(job)
 
-# generate a single generic Morris trajectory in terms of level indices
-# k is the number of parameters, p the number of divisions
-# result is a list of k+1 index lists of length k, whose values are in [0..(p-1)]
-# (ie, a start position and k single-param changes)
-# trajectory is calculated starting from the supplied vector if given
-def trajectory(k, p, vector=None):
-    if vector is None:
-        vector = npr.random_integers(p-1, size=k)
-    direction = npr.random_integers(1, size=k)
-    result = [vector]
-    steps = npr.permutation(k)
-    for idx in steps:
-        vector = vector.copy()
-        
-        # all vectors must remain in the space, so params on the
-        # boundaries can only step inward
-        if vector[idx] == 0:
-            vector[idx] = 1
-        elif vector[idx] == p-1:
-            vector[idx] = p-2
-        else:
-            if direction[idx] == 0:
-                vector[idx] -= 1
-            else:
-                vector[idx] += 1
-        
-        result.append(vector)
+    # second order: changing pairs of params, or the same one twice
+    for ii in range(len(params)):        
+        for jj in range(ii,len(params)):
+            job = []
+            for pp in range(len(params)):
+                if pp == ii and pp == jj:
+                    job.append(params[pp]['delta2'])
+                elif pp == ii or pp == jj:
+                    job.append(params[pp]['delta'])
+                else:
+                    job.append(params[pp]['default'])
+            result.append(job)
+    
     return result
+
 
 # build model
 def make_model(config):
@@ -460,7 +514,7 @@ def run_jobs(model, jobs, config):
         # not lose days of processing...
         if config['save_interval'] > 0 and ii % config['save_interval'] == 0:
             print 'Saving intermediate results'
-            output_results(jobs, np.vstack(result), config)
+            output_results(jobs, np.vstack(result), config, True)
         
     if excess:
         print 'Running %d excess jobs' % excess
@@ -486,10 +540,17 @@ def run_jobs(model, jobs, config):
 # output the results
 # for the moment we just dump as tab-delim text to stdout
 # eventually there will probably be configurable options
-def output_results(jobs, results, config):
+def output_results(jobs, results, config, intermediate=False):
     print 'Writing info file'
     with open(config['info'], 'w') as out:
+        # this is tiresome, but needed to be able to read the file later
+        distance = config['distance']
+        config['distance'] = None
+        
         pprint.pprint(config, stream=out)
+        
+        # ok, now we can restore it
+        config['distance'] = distance
     
     print 'Writing results file'
     t0 = time.time()
@@ -536,8 +597,121 @@ def output_results(jobs, results, config):
     
     t1 = time.time()
     print 'Completed: %s (%.2f seconds to write)' % (time.asctime(time.localtime(t0)), t1-t0)
+    
+    # for sensitivity jobs, calculate sensitivities for each output and dump those too
+    if config.get('job_mode', JOB_MODE) in ('morris', 'fast', 'hessian')  and not intermediate:
+        postproc(jobs, results, config)
 
 
+# do postprocessing on the simulation results
+# -- ie, for each output, calculate distance metric and then work out sensitivity or hessian
+def postproc(jobs, results, config):
+    collated = {}
+    print 'Post-processing job results'
+    for var in config['vars']:
+        name = var['name']
+        pts = var.get('points', np.zeros(len(config['times'])) )
+        
+        collated[name] = { 'target': pts,
+                           'distances': [] }
+    
+    summed = []
+    
+    print 'Calculating distances'
+    for job in range(results.shape[0]):
+        for rep in range(results.shape[1]):
+            sumdist = 0
+            for species in range(results.shape[3]):
+                name = config['vars'][species]['name']
+                cv = collated[name]
+                dist = config['distance'](cv['target'], results[job, rep, :, species])
+                cv['distances'].append(dist)
+                sumdist += dist * config['weights'].get(name, 1)
+            summed.append(sumdist)
+    
+    if config['job_mode']=='hessian':
+        summed 
+        process_hessian(jobs, np.array(summed), config)
+    else:
+        process_SA(jobs, collated, config)
+
+# sensitivity analysis
+def process_SA(jobs, collated, config):
+    for var in collated:
+        print 'Calculating sensitivities for variable %s' % var
+        collated[var]['distances'] = np.array(collated[var]['distances'])
+        
+        if config['job_mode']=='morris':
+            collated[var]['sensitivities'] = SALib.analyze.morris.analyze(config['problem'],
+                                                                          jobs,
+                                                                          collated[var]['distances'],
+                                                                          num_levels=config['divisions'],
+                                                                          print_to_console=True,
+                                                                          grid_jump=config['jump'])
+        elif config['job_mode']=='fast':
+            collated[var]['sensitivities'] = SALib.analyze.fast.analyze(config['problem'],
+                                                                        collated[var]['distances'],
+                                                                        config['interference'],
+                                                                        print_to_console=True)        
+    
+    print 'Writing sensitivities to file %s' % config['sensitivities']
+    
+    # ok, now print the wretched things to yet another tab-delimited file
+    
+    # tailor the output according to job type
+    fields = { 'morris': ['mu', 'mu_star', 'sigma', 'mu_star_conf'],
+               'fast': ['S1', 'ST'] }.get(config['job_mode'], [])
+    with open(config['sensitivities'], 'w') as f:
+        header = ['Parameter']
+        for var in collated:
+            header.extend(['%s_%s' % (var, x) for x in fields])
+        print >> f, '\t'.join(header)
+        
+        prms = [ p['name'] for p in config['params'] + config['vars'] ]
+        for ii in range(len(prms)):
+            row = [prms[ii]]
+            for var in collated:
+                row.extend([str(collated[var]['sensitivities'][x][ii]) for x in fields])
+            print >> f, '\t'.join(row)
+
+# estimate hessian matrix for each output
+def process_hessian(jobs, summed, config):
+    params = config['params'] + config['vars']
+    N = len(params)
+    
+    # denominator is shared by all signals
+    denom = np.zeros((N,N))
+    for ii in range(N):
+        for jj in range(N):
+            # this will be wrong if too near the bounds
+            denom[(ii,jj)] = (params[ii]['delta'] - params[ii]['default']) * (params[jj]['delta'] - params[jj]['default'])
+    
+    base = summed[0]
+    first = np.zeros(N)
+    numer = np.zeros((N,N))
+    
+    for ii in range(N):
+        first[ii] = summed[ii + 1]
+    
+    idx = N + 1
+    for ii in range(N):
+        for jj in range(ii,N):
+            numer[(ii,jj)] = summed[idx] + base - first[ii] - first[jj]
+            numer[(jj,ii)] = numer[(ii,jj)]
+            idx += 1
+    
+    # factors that do not vary cannot have effects,
+    # so we artificially force gradient to be zero
+    numer[denom==0] = 0
+    denom[denom==0] = 1
+    
+    hess = numer/denom
+            
+    with open(os.path.join(config['work'],'Hessian.txt'), 'wb') as f:
+        print >> f, '\t'.join([p['name'] for p in params])
+        for ii in range(N):
+            print >> f, '\t'.join([str(x) for x in hess[ii]])
+    
 
 # main entry point
 # provide a job file and a data file

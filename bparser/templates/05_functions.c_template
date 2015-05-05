@@ -46,8 +46,8 @@ int configure ( int argc, char** argv )
                 return ERR_EXIT;
             
             case 's':
-                dump_symbols();
-                return ERR_EXIT;
+                DUMP_SYMBOLS = 1;
+                break;
             
             case 'm':
                 print_name();
@@ -63,7 +63,7 @@ int configure ( int argc, char** argv )
         }
     }
     
-    if ( inputName )
+    if ( !DUMP_SYMBOLS && inputName )
     {
         inputFile = fopen(inputName, "r");
         if ( ! inputFile )
@@ -77,7 +77,7 @@ int configure ( int argc, char** argv )
         inputFile = 0;
     }
     
-    if ( outputName )
+    if ( !DUMP_SYMBOLS && outputName )
     {
         outputFile = fopen(outputName, "w");
         if ( !outputFile )
@@ -93,7 +93,7 @@ int configure ( int argc, char** argv )
         outputFile = stdout;
     }
     
-    if ( detailName )
+    if ( !DUMP_SYMBOLS && detailName )
     {
         detailFile = fopen(detailName, "w");
         if ( !detailFile )
@@ -146,7 +146,7 @@ void dump_symbols()
        about this at present) */
     int ii;
     for ( ii = 0; ii < SYMBOL_COUNT; ++ii )
-        printf("%s\n", SYMBOLS[ii]);
+        printf("%s\t%g\n", SYMBOLS[ii], RPAR[ii]);
 }
 
 /* current input file spec is not fit for human consumption
@@ -809,6 +809,13 @@ int main ( int argc, char** argv )
         finish();
         fprintf(stderr, "%s\n", ERROR_MESSAGES[err]);
         return err;
+    }
+    
+    if ( DUMP_SYMBOLS )
+    {
+        dump_symbols();
+        finish();
+        return 0;
     }
     
     err = ERR_RADAU_OFFSET + run();
