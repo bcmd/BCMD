@@ -34,7 +34,7 @@ CONFIG = { 'modelpath': ['.', 'models' ],
            'input-makes-intermed':True }
 
 # these are effectively constants
-VERSION = 0.5
+VERSION = 0.6
 MODELDEF_EXT = '.modeldef'
 CODE_EXT = '.c'
 MODEL_EXT = '.model'
@@ -172,7 +172,7 @@ def load_sources(config):
         
         if src is None:
             logger.warn("File not found: " + sources[srcIndex])
-            failedSources.append[sources[srcIndex]]
+            failedSources.append(sources[srcIndex])
         else:
             nErrs, ast = parse_file(src)
             if nErrs > 0 or ast is None:
@@ -194,6 +194,8 @@ def load_sources(config):
     
     logger.message("Total number of attempted source files: %d" % srcIndex)
     logger.message("%d parsed, %d failed" % (len(parsedSources), len(failedSources)))
+    for failed in failedSources:
+        logger.message("  ->  %s" % failed)
     
     return {'sources':sources, 'parsed':parsedSources, 'failed':failedSources, 'merged':merged}
 
