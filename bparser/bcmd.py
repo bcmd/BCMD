@@ -84,7 +84,7 @@ def print_errors():
 def search_file(filename, search_path):
     for path in search_path:
         candidate = os.path.join(path, filename)
-        if os.path.exists(candidate): return os.path.abspath(candidate)
+        if os.path.isfile(candidate): return os.path.abspath(candidate)
     return None
 
 # process arguments
