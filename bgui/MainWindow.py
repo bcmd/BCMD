@@ -111,6 +111,7 @@ class MainWindow(ttk.Frame):
         self.param_file_state = tk.IntVar()
         self.param_explicit_state = tk.IntVar()
         self.param_steady_state = tk.IntVar()
+        self.param_match_inputs_state = tk.IntVar()
         self.param_omit_state = tk.IntVar()
         self.param_file_name = tk.StringVar()
         self.param_value = tk.StringVar()
@@ -280,6 +281,7 @@ class MainWindow(ttk.Frame):
         self.param_file_check = ttk.Checkbutton(self.param_section, text='From File', variable=self.param_file_state, command=self.show_initial_values)
         self.param_explicit_check = ttk.Checkbutton(self.param_section, text='Explicit', variable=self.param_explicit_state, command=self.show_initial_values)
         self.param_steady_check = ttk.Checkbutton(self.param_section, text='Equilibrate', variable=self.param_steady_state)
+        self.param_match_inputs_check = ttk.Checkbutton(self.param_section, text='Match Inputs', variable=self.param_match_inputs_state)
         self.param_omit_check = ttk.Checkbutton(self.param_section, text='Model Only', variable=self.param_omit_state, command=self.show_initial_values)        
         self.param_file_field = ttk.Entry(self.param_section, width=10, textvariable=self.param_file_name)
         self.param_steady_duration_field = ttk.Entry(self.param_section, width=10, textvariable=self.param_steady_duration)
@@ -304,6 +306,7 @@ class MainWindow(ttk.Frame):
         self.param_steady_check.grid(row=5, column=1, columnspan=2, sticky=tk.W)
         ttk.Label(self.param_section, text='Duration').grid(column=1, row=6, sticky=tk.W)
         self.param_steady_duration_field.grid(row=6, column=2, sticky=(tk.E, tk.W))
+        self.param_match_inputs_check.grid(row=6, column=4, columnspan=3, sticky=tk.W)
         self.param_textarea.grid(row=7, column=1, columnspan=6, sticky=(tk.N, tk.W, tk.E, tk.S))
         
         self.sections.add(self.param_section, text="Initial Values")
@@ -752,6 +755,7 @@ class MainWindow(ttk.Frame):
         self.config.use_param_file = bool(self.param_file_state.get())
         self.config.omit_non_model_params = bool(self.param_omit_state.get())
         self.config.use_explicit = bool(self.param_explicit_state.get())
+        self.config.match_inputs = bool(self.param_match_inputs_state.get())
         self.config.do_steady = bool(self.param_steady_state.get())
         try:
             self.config.steady_duration = float(decimal.Decimal(self.param_steady_duration.get()))
@@ -806,6 +810,7 @@ class MainWindow(ttk.Frame):
         self.param_file_state.set(int(self.config.use_param_file))
         self.param_omit_state.set(int(self.config.omit_non_model_params))
         self.param_explicit_state.set(int(self.config.use_explicit))
+        self.param_match_inputs_state.set(int(self.config.match_inputs))
         self.param_steady_state.set(int(self.config.do_steady))
         self.param_steady_duration.set(str(self.config.steady_duration))
         
@@ -1186,6 +1191,11 @@ class MainWindow(ttk.Frame):
     def calculate_steps(self):
         lines = []
         step_count = 0
+
+        # marshal any data we're going to insert later, in case
+        # we need to match inputs in the preamble
+        time, data = self.marshal_signals()
+        names = sorted(data.keys(), key=str.lower)
         
         init_names = []
         init_vals = []
@@ -1196,6 +1206,12 @@ class MainWindow(ttk.Frame):
                     init_names.append(name)
                     init_vals.append(self.explicit_params[name])
         
+        if self.config.match_inputs:
+            for name in names:
+                if name not in init_names:
+                    init_names.append(name)
+                    init_vals.append(data[name][0])
+
         if self.config.use_param_file:
             for name in sorted(self.file_params.keys(), key=str.lower):
                 if name not in init_names and (self.parsed_model is None or name in self.parsed_model['symlist'] or not self.config.omit_non_model_params):
@@ -1214,9 +1230,9 @@ class MainWindow(ttk.Frame):
             lines.append('# initial values')
         
         for ii in range(n_init_lines):
-            names = init_names[(ii*self.config.max_inits):((ii+1)*self.config.max_inits)]
+            inames = init_names[(ii*self.config.max_inits):((ii+1)*self.config.max_inits)]
             vals = [str(x) for x in init_vals[(ii*self.config.max_inits):((ii+1)*self.config.max_inits)]]
-            lines.append(': %d %s' % (len(names), ' '.join(names)))
+            lines.append(': %d %s' % (len(inames), ' '.join(inames)))
             lines.append('= 0 0 %s' % ' '.join(vals))
             step_count += 1
         
@@ -1257,10 +1273,7 @@ class MainWindow(ttk.Frame):
             lines.append('>>> *')
         
         # now to insert some actual steps
-        
-        time, data = self.marshal_signals()
-        names = sorted(data.keys(), key=str.lower)
-        
+                
         # for the moment we only implement policies that do not
         # require changing settings as we go
         # and we should also be guaranteed non-empty lists

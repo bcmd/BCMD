@@ -37,6 +37,7 @@ PREF_FIELDS = [ 'model_path', 'input_path',
                 'param_file', 'use_param_file',
                 'use_explicit', 'omit_non_model_params',
                 'steady_duration', 'do_steady',
+                'match_inputs',
                 
                 'time_from_file', 'time_file',
                 'time_rate', 'time_duration',
@@ -159,6 +160,8 @@ class Config(object):
         self.omit_non_model_params = True
         self.steady_duration = 1000
         self.do_steady = 0
+        
+        self.match_inputs = True
 
         self.time_from_file = TIME_FROM_FILE
         self.time_file = ''
