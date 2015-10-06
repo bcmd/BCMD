@@ -206,10 +206,11 @@ The input file performs a gradual ramp down of arterial pressure, then a ramp ba
 
 ## Windkessel
 
-Three Windkessel blood flow models with increasing numbers of elements. The 2-element and
-3-element versions are expressed in electical terms (voltage, current) rather than
-hydrodynamic (pressure, flow), but the difference is cosmetic. The 4-element version
-is adapted from [Kind 2010][15]
+Three Windkessel blood flow models with increasing numbers of elements (see, eg,
+[Westerhof 2009][15]). The 2-element and 3-element versions are expressed in electical
+terms (voltage, current, capacitance) rather than hydrodynamic (pressure, flow,
+compliance), but the distinction is cosmetic. The 4-element version
+is adapted from [Kind 2010][16].
 
 * `wk2.modeldef`
 * `wk3.modeldef`
@@ -222,6 +223,8 @@ changes through the model.
 * `wk3.input`
 * `wk4.input`
 
-  [15]: http://doi.org/10.1109/TBME.2010.2041351
+  [15]: http://dx.doi.org/10.1007/s11517-008-0359-2
+        "Westerhof N et al (2009). Medical and Biological Engineering and Computing, 47(2), 131-141."
+  [16]: http://doi.org/10.1109/TBME.2010.2041351
         "Kind T et al (2010). IEEE Transactions on Biomedical Engineering, 57(7), 1531–1538."
 
