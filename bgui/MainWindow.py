@@ -93,6 +93,7 @@ class MainWindow(ttk.Frame):
         # input management pane
         self.generate_name = tk.StringVar()
         self.use_generated_state = tk.IntVar()
+        self.run_generated_state = tk.IntVar()
         
         # info pane
         self.graph_init_state = tk.IntVar()
@@ -268,11 +269,14 @@ class MainWindow(ttk.Frame):
         self.use_generated_check = ttk.Checkbutton(self.input_panel, text='Set Input', variable=self.use_generated_state)
         self.use_generated_check.grid(column=4, row=2, sticky=tk.W)
         
+        self.run_generated_check = ttk.Checkbutton(self.input_panel, text='Run', variable=self.run_generated_state)
+        self.run_generated_check.grid(column=5, row=2, sticky=tk.W)
+        
         self.sections = ttk.Notebook(self.input_panel)
         self.add_param_section()
         self.add_signals_section()
         self.add_output_section()        
-        self.sections.grid(row=4, column=1, columnspan=4, sticky=(tk.N, tk.W, tk.E, tk.S))
+        self.sections.grid(row=4, column=1, columnspan=5, sticky=(tk.N, tk.W, tk.E, tk.S))
         self.top_level.add(self.input_panel, text='Control')
     
     def add_param_section(self):
@@ -745,6 +749,7 @@ class MainWindow(ttk.Frame):
         self.config.detail_name = self.detail_name.get()
         self.config.generate_name = self.generate_name.get()
         self.config.use_generated = bool(self.use_generated_state.get())
+        self.config.run_generated = bool(self.run_generated_state.get())
         self.config.graph_unused = bool(self.graph_unused_state.get())
         self.config.graph_init = bool(self.graph_init_state.get())
         self.config.graph_params = bool(self.graph_params_state.get())
@@ -800,6 +805,7 @@ class MainWindow(ttk.Frame):
         self.detail_name.set(self.config.detail_name)
         self.generate_name.set(self.config.generate_name)
         self.use_generated_state.set(int(self.config.use_generated))
+        self.run_generated_state.set(int(self.config.run_generated))
         self.graph_unused_state.set(int(self.config.graph_unused))
         self.graph_init_state.set(int(self.config.graph_init))
         self.graph_params_state.set(int(self.config.graph_params))
@@ -1186,6 +1192,10 @@ class MainWindow(ttk.Frame):
         if self.config.use_generated:
             self.config.set_input(filepath)
             self.sync_from_config()
+            
+            if self.config.run_generated:
+                self.action_run()
+                
     
     # construct the steps for an input file, as a simple list of strings
     def calculate_steps(self):
