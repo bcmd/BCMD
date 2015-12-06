@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+
+This file will provide syntax colouring for the .input files
+used as part of the BCMD model.
+
+Joshua Russell-Buckland <j.russell-buckland.15@ucl.ac.uk>
+
+-->
+
+<language id="input" _name="BCMD Model Input" version="2.0" _section="Scientific">
+  <metadata>
+    <property name="mimetypes">text/x-bcmd;application/x-bcmd</property>
+    <property name="globs">*.input</property>
+    <property name="line-comment-start">#</property>
+  </metadata>
+  
+  <styles>
+    <style id="comment" _name="Comment" map-to="def:comment"/>
+    <style id="header" _name="Header" map-to="def:constant"/>
+    <style id="output" _name="Output" map-to="def:type"/>
+    <style id="operator" _name="Operator" map-to="def:operator"/>  
+  </styles>
+   
+      
+  <definitions> 
+    <context id="comment" style-ref="comment"  end-at-line-end="true" class="comment" class-disabled="no-spell-check">
+      <start>#</start>
+    </context>
+    
+    <context id="header" style-ref="header" end-at-line-end="true">
+      <start>@</start>
+    </context>    
+    
+    <context id="output" style-ref="output" end-at-line-end="true">
+      <start>!|!!|!!!|!0|&gt;|&gt;&gt;|&gt;&gt;&gt;</start>
+    </context>
+    
+    <context id="operator" style-ref="operator">
+      <match>(:|\=|\*|\+)</match>
+    </context>
+    
+    <!--Main context-->
+    <context id="input">
+      <include>
+        <context ref="comment"/>
+        <context ref="header"/>
+        <context ref="output"/>
+        <context ref="operator"/>    
+      </include>
+    </context>
+    
+  </definitions>
+</language>
