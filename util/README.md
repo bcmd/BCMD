@@ -5,6 +5,12 @@
 
 Modules are provided for highlighting the syntax of the main BCMD file formats in the following editors.
 
+#### Gedit (Linux Distros)
+
+Copy the files 'input.lang' to the appropriate Language directory,usually /usr/share/gtksourceview-3.0/language-specs.
+
+For more information, visit [Gedit](https://help.gnome.org/users/gedit/stable/gedit-syntax-highlighting.html.en)
+
 #### BBEdit/TextWrangler (Mac)
 
 Copy the files `abcjob.plist`, `input.plist` and `modeldef.plist` to the appropriate Language Modules directory:
