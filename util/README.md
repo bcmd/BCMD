@@ -7,7 +7,7 @@ Modules are provided for highlighting the syntax of the main BCMD file formats i
 
 #### Gedit (Linux Distros)
 
-Copy the files 'input.lang' to the appropriate Language directory,usually /usr/share/gtksourceview-3.0/language-specs.
+Copy the file `input.lang` to the appropriate language directory, usually `/usr/share/gtksourceview-3.0/language-specs`.
 
 For more information, visit [Gedit](https://help.gnome.org/users/gedit/stable/gedit-syntax-highlighting.html.en)
 
