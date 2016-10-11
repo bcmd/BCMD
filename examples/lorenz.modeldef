@@ -1,4 +1,4 @@
-# BCMD implementation of the Lorentz model
+# BCMD implementation of the Lorenz model
 # adapted from BRAINCIRC module "lorentz.dt"
 
 # differential equations

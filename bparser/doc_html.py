@@ -102,7 +102,7 @@ def printTags(file, model, config):
     if model['tags']:
         for tag in sorted(model['tags'].keys(), key=lambda s: s.lower()):
             print >> file, '<div class="tag">'
-            print >> file, '<h4>%s</h4>' % tag
+            print >> file, '<h4><a name="_tag_%s">%s</a></h4>' % (tag, tag)
             items = [ '<a href="#%s">%s</a>' % (name, name) for name in sorted(model['tags'][tag], key=lambda s: s.lower()) ]
             tabulate(file, items, ncols=TABLE_COLS, byrow=BY_ROW)
             print >> file, '</div>'

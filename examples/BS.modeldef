@@ -164,7 +164,7 @@ f1 = k1 * a - kn1 * ared
 
 ## Reaction rate for the reduction of a$_3$.
 ## ~ mM s$^{-1}$
-## $f_3$
+## $f_2$
 ## + Metabolism
 f2 = k2 * ared * b - kn2 * a * bred
 
@@ -786,7 +786,7 @@ p1 = p_tot - p23
 
 ## Proton cost of the reaction reducing a$_3$.
 ## ~ dimensionless
-## $p_3$
+## $p_2$
 ## + Metabolism
 p2 := 4
 

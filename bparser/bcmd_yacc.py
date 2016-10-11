@@ -22,8 +22,8 @@ precedence = (
         ('right', 'EQ', 'NE', 'LT', 'LE', 'GT', 'GE'),
 	('left', 'PLUS', 'MINUS'),
 	('left', 'TIMES', 'DIVIDE'),
-	('left', 'POWER'),
 	('right', 'UMINUS'),
+	('left', 'POWER'),
 )
 
 # grammar rules

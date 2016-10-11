@@ -23,7 +23,7 @@ PREF_FIELDS = [ 'model_path', 'input_path',
                 'coarse_name', 'detail_name',
                 
                 'generate_name', 'generate_dir',
-                'use_generated',
+                'use_generated', 'run_generated',
                 
                 'graph_unused', 'graph_init',
                 'graph_self', 'graph_clusters',
@@ -137,6 +137,7 @@ class Config(object):
         self.generate_name = 'generated' + EXTENSIONS['input']
         self.generate_dir = self.input_dir
         self.use_generated = True
+        self.run_generated = True
         
         self.graph_unused = True
         self.graph_init = True

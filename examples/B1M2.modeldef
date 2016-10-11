@@ -146,7 +146,7 @@ f1 = f1_0 + f1_a * log(a)
 
 ## Reaction rate for the reduction of a$_3$.
 ## ~ mM s$^{-1}$
-## $f_3$
+## $f_2$
 ## + Metabolism
 f2 = f2_0 + f2_bred * log(bred)
 
@@ -436,7 +436,7 @@ p1 := 12
 
 ## Proton cost of the reaction reducing a$_3$.
 ## ~ dimensionless
-## $p_3$
+## $p_2$
 ## + Metabolism
 p2 := 4
 
