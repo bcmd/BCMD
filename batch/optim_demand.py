@@ -83,6 +83,8 @@ def process_args():
         config['work'] = args.outdir
     # otherwise leave as None and concoct after reading job file
 
+    config['dryrun'] = args.dryrun
+    config['wetrun'] = args.wetrun
     config['debug'] = args.debug
 
     return config
