@@ -57,7 +57,7 @@ def process_args():
     args = ap.parse_args()
 
     config = copy.copy(CONFIG_DEFAULT)
-    config['rootdir'] = args.jobfile
+    config['rootdir'] = args.rootdir
     inputDir = os.path.join(config['rootdir'], 'input_files')
     config['inputfiles'] = [f for f in os.listdir(inputDir) if os.path.isfile(os.path.join(inputDir, f))]
 
