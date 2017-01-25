@@ -72,6 +72,7 @@ def process_args():
     config['rootdir'] = args.rootdir
     inputDir = os.path.join(config['rootdir'], 'input_files')
     config['inputfiles'] = [f for f in os.listdir(inputDir) if os.path.isfile(os.path.join(inputDir, f))]
+    config['jobfile'] = args.jobfile
 
     if args.build:
         config['build'] = args.build
