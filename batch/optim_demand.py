@@ -44,9 +44,21 @@ def process_args():
     ap = argparse.ArgumentParser(
         description="Parameter optimisation for BCMD models")
     ap.add_argument(
+        '-b', '--build',
+        help='build/model directory (default: [BCMD_HOME]/build)',
+        metavar='DIR')
+    ap.add_argument(
         '-o', '--outdir',
         help='output directory (default:[BUILD]/[MODEL_NAME]/[TIMESTAMP]',
         metavar='DIR')
+    ap.add_argument(
+        '-d', '--dryrun',
+        help='dump configuration details without simulating',
+        action='store_true')
+    ap.add_argument(
+        '-w', '--wetrun',
+        help='single test run and data dump without full optimisation',
+        action='store_true')
     ap.add_argument(
         '-D', '--debug',
         help='run in debug mode, logging various things to stderr',
