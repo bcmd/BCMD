@@ -16,7 +16,7 @@ var: HbO2, constant, 0
 param_file: ./bsx_pdist.txt
 param_select: *
 # Include time as alias as per manual
-alias: t, t
+alias: t , t
 
 
 
