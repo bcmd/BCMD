@@ -13,7 +13,7 @@ var: HHb, constant, 0
 var: HbO2, constant, 0
 
 # Param_file
-param_file: bsx_pdist.txt
+param_file: ./bsx_pdist.txt
 param_select: *
 # Include time as alias as per manual
 alias: t, t
