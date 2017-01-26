@@ -112,17 +112,17 @@ def looped_process(config):
 
                 # for the moment we just print the results here
                 # -- which may be superfluous, since OO will print stuff as well
-                print("\n Output from file %s\n" % config['datafile'])
+                print("\n££ Output from file %s\n" % config['datafile'])
                 print("\nRESULTS\n")
                 print("Stop case %g: %s" % (rr.istop, rr.msg))
                 if rr.isFeasible:
                     print("Feasible solution found")
                 else:
                     print("No feasible solution found")
-                print("Final distance value: %f" % rr.ff)
+                print("&& Final distance value: %f" % rr.ff)
                 print("Final parameter values:")
                 for ii in range(len(rr.xf)):
-                    print("  %s: %f" % (config['params'][ii]['name'], rr.xf[ii]))
+                    print("^^  %s: %f" % (config['params'][ii]['name'], rr.xf[ii]))
 
             else:
                 print('CONFIG:')
