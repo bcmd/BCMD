@@ -70,7 +70,7 @@ def process_args():
 
     config = copy.copy(CONFIG_DEFAULT)
     config['rootdir'] = args.rootdir
-    inputDir = os.path.join(config['rootdir'], 'input_files')
+    inputDir = config['rootdir']
     config['inputfiles'] = [os.path.join(inputDir, f) for f in os.listdir(inputDir) if os.path.isfile(os.path.join(inputDir, f))]
     config['jobfile'] = args.jobfile
 
