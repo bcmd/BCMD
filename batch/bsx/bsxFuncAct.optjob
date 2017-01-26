@@ -5,8 +5,8 @@ model: bsx
 # Model inputs here come from a demand (always starting at 1) and
 # the systemic data
 input: u, constant, 1
-input: P_a, normal, 100, 30
-input: Pa_CO2, normal, 43, 5
+input: P_a, normal, 83.26892613, 8.914278038
+input: Pa_CO2, normal, 39.72972468, 2.940877252
 
 # Variable to optimise for
 var: HHb, constant, 0
