@@ -1,0 +1,25 @@
+# Optimisation job file for functional activation tests in BSX
+# specify which model to use
+model: bsx
+
+# Model inputs here come from a demand (always starting at 1) and
+# the systemic data
+input: u, constant, 1
+input: P_a, normal, 83.26892613, 8.914278038
+input: Pa_CO2, normal, 39.72972468, 2.940877252
+
+# Variable to optimise for
+var: HHb, constant, 0
+var: HbO2, constant, 0
+
+# Param_file
+param_file: ./bsx_pdist.txt
+param_select: *
+# Include time as alias as per manual
+alias: t , t
+
+# SA Specific settings
+job_mode: morris
+nbatch: 3
+beta: 3
+timeout: 60
