@@ -412,6 +412,7 @@ def morris(params, config):
                           'names': [p['name'] for p in params],
                           'groups': None,
                           'bounds': [[p.get('min',0), p.get('max',1)] for p in params] }
+    pprint.pprint(config['problem']['bounds'])
 
     result = SALib.sample.morris.sample(config['problem'],
                                         config['npath'],
