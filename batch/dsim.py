@@ -412,9 +412,6 @@ def morris(params, config):
                           'groups': None,
                           'bounds': [[p.get('min',0), p.get('max',1)] for p in params] }
 
-    for idx in range(config['problem']['num_vars']):
-        print('%s:\t %s' % (config['problem']['names'][idx], config['problem']['bounds'][idx]))
-
     result = SALib.sample.morris.sample(config['problem'],
                                         config['npath'],
                                         config['divisions'],
