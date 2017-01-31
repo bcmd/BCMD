@@ -374,7 +374,6 @@ def make_jobs(config):
         quants = [quantiles(p, config['divisions']) for p in params]
         result = cartesian(quants)
     elif mode == 'morris':
-        pprint.pprint(config)
         result = morris(params, config)
     elif mode == 'fast':
         result = fast(params, config)
@@ -413,7 +412,7 @@ def morris(params, config):
                           'groups': None,
                           'bounds': [[p.get('min',0), p.get('max',1)] for p in params] }
 
-    for idx in config['problem']['num_vars']:
+    for idx in range(config['problem']['num_vars']):
         print('%s:\t %s' % (config['problem']['names'][idx], config['problem']['bounds'][idx]))
 
     result = SALib.sample.morris.sample(config['problem'],
