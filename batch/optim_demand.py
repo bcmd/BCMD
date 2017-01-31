@@ -104,6 +104,7 @@ def looped_process(config):
         datafile_append(config)
         if config:
             optim.process_inputs(config)
+            print("\n~~ Output from file %s\n" % config['datafile'])
             model = optim.make_model(config)
             optimiser = optim.make_optimiser(config, model)
             if optimiser:
@@ -112,7 +113,6 @@ def looped_process(config):
 
                 # for the moment we just print the results here
                 # -- which may be superfluous, since OO will print stuff as well
-                print("\n~~ Output from file %s\n" % config['datafile'])
                 print("\nRESULTS\n")
                 print("Stop case %g: %s" % (rr.istop, rr.msg))
                 if rr.isFeasible:
