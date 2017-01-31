@@ -74,7 +74,7 @@ def process_args():
     config['inputfiles'] = [os.path.join(inputDir, f)
                             for f in os.listdir(inputDir)
                             if os.path.isfile(os.path.join(inputDir, f)) and
-                            os.path.splitext(f)[1] == 'csv']
+                            os.path.splitext(f)[1] == '.csv']
     config['jobfile'] = args.jobfile
 
     if args.build:
