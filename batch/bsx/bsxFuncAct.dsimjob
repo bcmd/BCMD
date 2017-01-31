@@ -19,7 +19,7 @@ param_select: *
 alias: t , t
 
 # SA Specific settings
-job_mode: morris
+job_mode: fast
 nbatch: 3
 beta: 3
 timeout: 60
