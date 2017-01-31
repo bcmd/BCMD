@@ -71,7 +71,10 @@ def process_args():
     config = copy.copy(CONFIG_DEFAULT)
     config['rootdir'] = args.rootdir
     inputDir = config['rootdir']
-    config['inputfiles'] = [os.path.join(inputDir, f) for f in os.listdir(inputDir) if os.path.isfile(os.path.join(inputDir, f))]
+    config['inputfiles'] = [os.path.join(inputDir, f)
+                            for f in os.listdir(inputDir)
+                            if os.path.isfile(os.path.join(inputDir, f)) and
+                            os.path.splitext(f)[1] == 'csv']
     config['jobfile'] = args.jobfile
 
     if args.build:
@@ -122,7 +125,8 @@ def looped_process(config):
                 print("&& Final distance value: %f" % rr.ff)
                 print("Final parameter values:")
                 for ii in range(len(rr.xf)):
-                    print("^^  %s: %f" % (config['params'][ii]['name'], rr.xf[ii]))
+                    print("^^  %s: %f" %
+                          (config['params'][ii]['name'], rr.xf[ii]))
 
             else:
                 print('CONFIG:')
