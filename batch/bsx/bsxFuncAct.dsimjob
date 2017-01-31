@@ -9,8 +9,8 @@ input: P_a, normal, 83.26892613, 8.914278038
 input: Pa_CO2, normal, 39.72972468, 2.940877252
 
 # Variable to optimise for
-var: HHb, normal, 0, 1
-var: HbO2, normal, 0, 1
+var: HHb, normal, 0, 5
+var: HbO2, normal, 0, 5
 
 # Param_file
 param_file: ./bsx_pdist.txt
@@ -19,7 +19,10 @@ param_select: *
 alias: t , t
 
 # SA Specific settings
-job_mode: fast
-nbatch: 3
+job_mode: morris
+nbatch: 6
 beta: 3
 timeout: 60
+divisions: 10
+npath: 20
+path_start: random
