@@ -233,7 +233,7 @@ def process_vars(vars, aliases, data):
 
         result.append(var)
 
-    return result
+    return result, names
 
 # get job details from input files
 def process_inputs(config):
@@ -309,7 +309,7 @@ def process_inputs(config):
         raise Exception("time step field '%s' not present in data file" % tname)
 
     config['times'] = timedata[tname]
-    config['vars'] = process_vars(vars, aliases, timedata)
+    config['vars'], varnames = process_vars(vars, aliases, timedata)
     config['params'] = process_vars(params, aliases, timedata)
 
     if param_select != PARAM_SELECT:
