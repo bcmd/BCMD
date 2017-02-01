@@ -310,7 +310,7 @@ def process_inputs(config):
 
     config['times'] = timedata[tname]
     config['vars'], varnames = process_vars(vars, aliases, timedata)
-    config['params'] = process_vars(params, aliases, timedata)
+    config['params'],  = process_vars(params, aliases, timedata)
 
     if param_select != PARAM_SELECT:
         all_params = config['params']
@@ -319,7 +319,7 @@ def process_inputs(config):
             if param['name'] in param_select:
                 config['params'].append(param)
 
-    config['inputs'] = process_vars(ins, aliases, timedata)
+    config['inputs'],  = process_vars(ins, aliases, timedata)
 
     config['baseSeq'], dummy = steps.readFiles(job['header'].get('init', [[]])[0])
     config['divisions'] = int(job['header'].get('divisions', [[DIVISIONS]])[0][0])
