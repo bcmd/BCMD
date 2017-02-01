@@ -25,6 +25,7 @@ import model_bcmd
 import steps
 import distance
 import inputs
+import posthoc
 
 # environment
 VERSION = 0.6
@@ -190,7 +191,7 @@ def process_vars(vars, aliases, data):
         else:
             names.append(name)
 
-        var = { 'name': name }
+        var = { 'name': name, 'post':[]}
 
         if name in aliases:
             dataname = aliases[name]
@@ -361,6 +362,13 @@ def process_inputs(config):
     else:
         config['distance'] = getattr(distance, job['header'].get('distance', [[DISTANCE]])[0][0])
 
+    # record any posthoc transformations for optimisation variables
+    posts = job['header'].get('post', [])
+    for post in posts:
+        if post[0] in varnames:
+            ff = posthoc.get(post[1:])
+            if ff is not None:
+                config['vars'][varnames.index(post[0])]['post'].append(ff)
     return config
 
 # build parameter combos for all job specs
@@ -610,8 +618,10 @@ def postproc(jobs, results, config):
     print 'Post-processing job results'
     for var in config['vars']:
         name = var['name']
-        pts = var.get('points', np.zeros(len(config['times'])) )
+        pts = var.get('points', np.zeros(len(config['times'])))
 
+        for post in var.get('post'):
+            pts = post(pts)
         collated[name] = { 'target': pts,
                            'distances': [] }
 
