@@ -26,3 +26,5 @@ solver: pswarm
 distance: euclidean
 max_iter: 1000
 steady: 1000
+post: HbO2, zero
+post: HHb, zero
