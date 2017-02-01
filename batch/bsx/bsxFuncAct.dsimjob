@@ -17,6 +17,7 @@ param_file: ./bsx_pdist.txt
 param_select: *
 # Include time as alias as per manual
 alias: t , t
+alias: HbO2, O2Hb
 
 # SA Specific settings
 job_mode: morris
