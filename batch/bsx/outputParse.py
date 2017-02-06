@@ -1,6 +1,7 @@
 import argparse
 import os.path
 import pprint
+import json
 
 
 def float_or_str(s):
@@ -32,8 +33,14 @@ def output_parse(fname):
 
             if li[0][:2] == '&&':
                 optim_data['Final_Distance'].append(float_or_str(li[-1]))
-
     return optim_data
+
+
+def data_writing(optim_data):
+    with open('optimisation.json', 'w') as fp:
+        json.dump(optim_data, fp)
+
+    return print('Data printed to %s' % os.path.abspath('./optimisation.json'))
 
 
 def cli_interface():
@@ -43,6 +50,8 @@ def cli_interface():
     args = ap.parse_args()
     optim_data = output_parse(args.output_file)
     pprint.pprint(optim_data, depth=2)
+
+    data_writing(optim_data)
     return optim_data
 
 
