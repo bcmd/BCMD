@@ -1,0 +1,30 @@
+# Optimisation job file for functional activation tests in BSX
+# specify which model to use
+model: bsx
+
+# Model inputs here come from a demand (always starting at 1) and
+# the systemic data
+input: u, constant, 1
+
+# Variable to optimise for
+var: HHb, constant, 0
+var: HbO2, constant, 0
+var: oxCCO, constant, 0
+
+# Param_file
+param_file: ./params_dist.txt
+param_select: CBFn, CMRO2_n, P_a, P_an, a_frac_n, cytox_tot_tis, blood_frac, Xtot, Xtot_n, P_ic, P_ic_n
+# Include time as alias as per manual
+alias: t , t
+
+
+
+# Optim specific settings
+job_mode: GLP
+solver: pswarm
+distance: euclidean
+max_iter: 1000
+steady: 1000
+substitution: 1000000
+post: HbO2, zero
+post: HHb, zero
