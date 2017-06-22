@@ -4,7 +4,7 @@
 model: rc
 
 # variable to simulate, with a default start value of 0
-var: Vc, constant, 0
+var: Vc, uniform, 0, 0.001
 
 # distribution ranges for the two parameters
 # (note that the effects of both are strongly non-uniform)
@@ -39,4 +39,3 @@ jump: 4
 
 # number of parallel sims (default 1)
 nbatch: 8
-
