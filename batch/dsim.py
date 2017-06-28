@@ -6,6 +6,7 @@
 # behavioural variation with parameters
 
 import numpy as np
+np.set_printoptions(threshold=np.inf)
 import numpy.random as npr
 import scipy.stats as stats
 import os, os.path, sys
