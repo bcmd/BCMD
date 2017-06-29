@@ -196,13 +196,12 @@ def calcDistances(dir, config):
             fields = ['mu', 'mu_star', 'sigma', 'mu_star_conf']
             with open(saFile, 'w') as sf:
                 print >> sf, '\t'.join(['Species', 'Metric', 'Param'] + fields)
-
                 for species in config['target']:
                     for dist in DIST_HEADS:
                         Y = numpy.array(distances[species][dist])
                         sens = SALib.analyze.morris.analyze(config['info']['problem'],
                                                             numpy.array(jobs),
-                                                            Y,
+                                                            Y.astype(float),
                                                             num_levels=config['info']['divisions'],
                                                             print_to_console=True,
                                                             grid_jump=config['info']['jump'])
