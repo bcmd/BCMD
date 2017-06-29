@@ -200,7 +200,6 @@ def calcDistances(dir, config):
                 for species in config['target']:
                     for dist in DIST_HEADS:
                         Y = numpy.array(distances[species][dist])
-                        print Y.size
                         sens = SALib.analyze.morris.analyze(config['info']['problem'],
                                                             numpy.array(jobs),
                                                             Y,
